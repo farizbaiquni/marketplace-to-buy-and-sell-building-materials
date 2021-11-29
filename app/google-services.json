@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98006347285",
+    "project_id": "e-commerce-toko-bangunan-97745",
+    "storage_bucket": "e-commerce-toko-bangunan-97745.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98006347285:android:14c81f5eb6454c17d9e81c",
+        "android_client_info": {
+          "package_name": "com.example.e_commercetokobangunan_koma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98006347285-5jl7p6vji3vh1ri4brhmmdr9cda75hef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_commercetokobangunan_koma",
+            "certificate_hash": "c552f3f85e8d9385554de98e7743912a979f41fb"
+          }
+        },
+        {
+          "client_id": "98006347285-ng013s1gttn4r3m9rk8s20tqi7nkfvn6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXxgSWQkGI8MkVX9ZcQxZg0H6ubwKfyKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98006347285-ng013s1gttn4r3m9rk8s20tqi7nkfvn6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

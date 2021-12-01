@@ -7,15 +7,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.e_commercetokobangunan_koma.adapters.AddProductAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProductBinding
-import com.example.e_commercetokobangunan_koma.models.Product
+import com.example.e_commercetokobangunan_koma.models.ProductModel
 import com.example.e_commercetokobangunan_koma.viewmodels.AddProductViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -214,7 +212,7 @@ class AddProductActivity : AppCompatActivity() {
     fun addProduct(nama: String, harga: String, deskripsi: String, linkVideo: String, jumlahStok: String,
                    berat: String, kondisiBaru: Boolean){
 
-        val data = Product(nama, harga.toLong(), deskripsi, linkVideo, jumlahStok.toLong(), berat.toFloat(),
+        val data = ProductModel(nama, harga.toLong(), deskripsi, linkVideo, jumlahStok.toLong(), berat.toFloat(),
         kondisiBaru)
 
         Firebase.firestore.collection("product")

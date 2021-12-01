@@ -2,7 +2,7 @@ package com.example.e_commercetokobangunan_koma.models
 
 import java.math.BigInteger
 
-data class Product(
+data class ProductModel(
     val name: String? = null,
     val harga: Long? = null,
     val deskripsi: String? = null,

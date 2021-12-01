@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_buyer_profil"
+        app:showAsAction="never|withText"
+        android:title="Profil"/>
+
+    <item
+        android:id="@+id/menu_buyer_exit_toko"
+        app:showAsAction="never|withText"
+        android:title="Exit Toko"/>
+
+</menu>

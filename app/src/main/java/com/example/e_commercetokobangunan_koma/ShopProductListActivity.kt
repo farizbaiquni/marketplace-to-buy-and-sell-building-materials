@@ -3,6 +3,7 @@ package com.example.e_commercetokobangunan_koma
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -35,6 +36,9 @@ class ShopProductListActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        //RecyclerView Adapter
+        adapterProductList = ShopProductListAdapter(this)
+
         // ViewModel
         model = ViewModelProvider(this).get(ShopProductListViewModel::class.java)
         model.getProductShop().observe(this) { products ->
@@ -49,17 +53,27 @@ class ShopProductListActivity : AppCompatActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if(currentUser == null){
-//            startActivity(Intent(this, WelcomeActivity::class.java))
+            startActivity(Intent(this, WelcomeActivity::class.java))
         } else {
+            Firebase.firestore.collection("shop")
+                .whereEqualTo("id_user", currentUser.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if(documents.isEmpty){
+                        startActivity(Intent(this, AddProfileShopActivity::class.java))
+                    }else{
+                        //RecyclerView Adapter
+                        var linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
+                        binding.recyclerViewShopProductList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+                        binding.recyclerViewShopProductList.layoutManager = linearLayoutManager
+                        binding.recyclerViewShopProductList.adapter = adapterProductList
 
-            //RecyclerView Adapter
-            adapterProductList = ShopProductListAdapter(this)
-            var linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
-            binding.recyclerViewShopProductList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-            binding.recyclerViewShopProductList.layoutManager = linearLayoutManager
-            binding.recyclerViewShopProductList.adapter = adapterProductList
-
-            getProductShopList()
+                        getProductShopList()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    //Log.w("TAG", "Error getting documents: ", exception)
+                }
 
         }
     }

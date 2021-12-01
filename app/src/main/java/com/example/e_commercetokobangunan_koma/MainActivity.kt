@@ -18,8 +18,8 @@ import com.google.firebase.ktx.Firebase
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var intentActivity: Intent
     private lateinit var binding: ActivityMainBinding
+    private lateinit var intentActivity: Intent
     private lateinit var tabOptions: Array<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {

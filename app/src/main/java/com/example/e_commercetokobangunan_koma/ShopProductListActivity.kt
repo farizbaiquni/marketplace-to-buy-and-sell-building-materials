@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -46,6 +49,10 @@ class ShopProductListActivity : AppCompatActivity() {
                 adapterProductList.setProducts(products)
             }
         }
+
+        //Action Bar Name
+        getSupportActionBar()?.setTitle("Produk Toko")
+
     }
 
     override fun onStart() {
@@ -63,9 +70,8 @@ class ShopProductListActivity : AppCompatActivity() {
                         startActivity(Intent(this, AddProfileShopActivity::class.java))
                     }else{
                         //RecyclerView Adapter
-                        var linearLayoutManager: LinearLayoutManager = LinearLayoutManager(this)
-                        binding.recyclerViewShopProductList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-                        binding.recyclerViewShopProductList.layoutManager = linearLayoutManager
+                        var gridLayoutManager: GridLayoutManager = GridLayoutManager(this, 2)
+                        binding.recyclerViewShopProductList.layoutManager = gridLayoutManager
                         binding.recyclerViewShopProductList.adapter = adapterProductList
 
                         getProductShopList()
@@ -77,6 +83,30 @@ class ShopProductListActivity : AppCompatActivity() {
 
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.option_menu_seller, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_add_product -> {
+                startActivity(Intent(this, AddProductActivity::class.java))
+                // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.menu_buyer_exit_toko -> {
+                startActivity(Intent(this, MainActivity::class.java))
+                // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     private fun getProductShopList(){
         var product: ShopProductListModel = ShopProductListModel("", 0, 0, false)
@@ -95,7 +125,6 @@ class ShopProductListActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal mendapatkan produk", Toast.LENGTH_SHORT).show()
             }
-
     }
 
 }// End class

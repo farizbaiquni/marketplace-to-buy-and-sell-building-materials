@@ -48,6 +48,16 @@ class MainActivity : AppCompatActivity() {
     }// End onCreate
 
 
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if(currentUser == null){
+            intentActivity = Intent(this, WelcomeActivity::class.java)
+            startActivity(intentActivity)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.option_menu_buyer, menu)
@@ -58,7 +68,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_buyer_toko -> {
-                Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, ShopProductListActivity::class.java))
+                // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.menu_buyer_profil -> {
@@ -66,16 +77,6 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if(currentUser == null){
-            intentActivity = Intent(this, WelcomeActivity::class.java)
-            startActivity(intentActivity)
         }
     }
 }

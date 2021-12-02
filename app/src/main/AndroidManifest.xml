@@ -14,25 +14,22 @@
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
             android:name=".AddProfileShopActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ShopProductListActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"/>
         <activity
             android:name=".AddProductActivity"
-            android:exported="true"></activity>
+            android:exported="true"
+            android:parentActivityName=".ShopProductListActivity"/>
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true" />
         <activity
             android:name=".SignUpActivity"
             android:exported="true"
             android:parentActivityName=".WelcomeActivity" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="true" />
         <activity
             android:name=".SignInActivity"
             android:exported="true"

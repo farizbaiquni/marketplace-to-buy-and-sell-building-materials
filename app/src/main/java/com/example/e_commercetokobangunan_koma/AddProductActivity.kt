@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -40,6 +41,9 @@ class AddProductActivity : AppCompatActivity() {
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        //Action Bar Name
+        getSupportActionBar()?.setTitle("Tambah Produk")
 
         lateinit var nama: String
         lateinit var harga: String
@@ -80,6 +84,8 @@ class AddProductActivity : AppCompatActivity() {
             berat = binding.etBerat.text.toString().trim()
             kondisiBaru = binding.radioButtonBaru.isChecked
             kondisiBekas = binding.radioButtonBekas.isChecked
+
+            Toast.makeText(this, jumlahStok, Toast.LENGTH_SHORT).show()
 
             if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas)){
                 addProduct(nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru)
@@ -203,7 +209,16 @@ class AddProductActivity : AppCompatActivity() {
             }
 
             return false
-        } else return  true
+        } else {
+            binding.textFieldNama.error = null
+            binding.textFieldHarga.error = null
+            binding.textFieldDeskripsi.error = null
+            binding.textFieldLinkVideo.error = null
+            binding.textFieldJumlahStok.error = null
+            binding.textFieldBerat.error = null
+            binding.textFieldKondisi.error = null
+            return  true
+        }
 
     }
 
@@ -275,8 +290,10 @@ class AddProductActivity : AppCompatActivity() {
                 Firebase.firestore.collection("product").document(it).collection("photos")
                     .add(data)
                     .addOnSuccessListener { documentReference ->
+                        startActivity(Intent(this, ShopProductListActivity::class.java))
                     }
                     .addOnFailureListener { e ->
+                        startActivity(Intent(this, ShopProductListActivity::class.java))
                     }
             }
         }

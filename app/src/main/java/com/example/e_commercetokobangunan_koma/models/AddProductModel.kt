@@ -2,13 +2,14 @@ package com.example.e_commercetokobangunan_koma.models
 
 import java.math.BigInteger
 
-data class ProductModel(
+data class AddProductModel(
+    val id_user: String? = null,
     val name: String? = null,
-    val harga: Long? = null,
-    val deskripsi: String? = null,
+    val price: Long? = null,
+    val description: String? = null,
     val linkVideo: String? = null,
-    val jumlahStok: Long? = null,
-    val berat: Float? = null,
+    val stock: Long? = null,
+    val weight: Double? = null,
     @field:JvmField // use this annotation if your Boolean field is prefixed with 'is'
-    val kondisiBaru: Boolean? = null,
+    val newCondition: Boolean? = null,
 )

@@ -3,12 +3,9 @@ package com.example.e_commercetokobangunan_koma
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProfileShopBinding
-import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
-import com.example.e_commercetokobangunan_koma.models.ProductModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -73,8 +70,9 @@ class AddProfileShopActivity : AppCompatActivity() {
 
         val docData = hashMapOf(
             "id_user" to idUser,
-            "nama" to nama,
-            "deskripsi" to deskripsi,
+            "photo_url" to "",
+            "name" to nama,
+            "description" to deskripsi,
         )
 
         Firebase.firestore.collection("shop")

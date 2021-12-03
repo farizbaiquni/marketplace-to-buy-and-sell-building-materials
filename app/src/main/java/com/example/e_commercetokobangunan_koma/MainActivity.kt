@@ -35,16 +35,6 @@ class MainActivity : AppCompatActivity() {
             Firebase.auth.signOut()
         })
 
-        tabOptions = arrayOf("EXPLORE", "CHARTS")
-
-        //Adapter View Pager
-        val adapter = MainViewPagerAdapter(supportFragmentManager, lifecycle)
-        binding.viewPager.adapter = adapter
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = tabOptions[position]
-        }.attach()
-
     }// End onCreate
 
 
@@ -55,6 +45,16 @@ class MainActivity : AppCompatActivity() {
         if(currentUser == null){
             intentActivity = Intent(this, WelcomeActivity::class.java)
             startActivity(intentActivity)
+        }else{
+            tabOptions = arrayOf("EXPLORE", "CHARTS")
+
+            //Adapter View Pager
+            val adapter = MainViewPagerAdapter(supportFragmentManager, lifecycle)
+            binding.viewPager.adapter = adapter
+
+            TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+                tab.text = tabOptions[position]
+            }.attach()
         }
     }
 

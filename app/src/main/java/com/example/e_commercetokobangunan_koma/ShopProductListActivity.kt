@@ -109,7 +109,7 @@ class ShopProductListActivity : AppCompatActivity() {
 
 
     private fun getProductShopList(){
-        var product: ShopProductListModel = ShopProductListModel("", 0, 0, false)
+        var product: ShopProductListModel = ShopProductListModel()
         var productList: MutableList<ShopProductListModel> = mutableListOf()
 
         Firebase.firestore.collection("product").limit(10)
@@ -117,7 +117,7 @@ class ShopProductListActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 for (document in result) {
                     product = ShopProductListModel(document.data.get("name").toString(),
-                        0, document.getLong("jumlahStok"), true)
+                        0, document.getLong("stock"), true)
                     productList.add(product)
                 }
                 model.setProductShop(productList)

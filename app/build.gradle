@@ -64,4 +64,10 @@ dependencies {
     //Circle Image View
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    //Skimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    //Glide for image slider
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+
 }

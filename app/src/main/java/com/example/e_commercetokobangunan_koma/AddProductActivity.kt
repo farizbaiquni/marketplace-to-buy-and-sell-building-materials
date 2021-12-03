@@ -5,26 +5,25 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.e_commercetokobangunan_koma.adapters.AddProductAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProductBinding
-import com.example.e_commercetokobangunan_koma.models.ProductModel
+import com.example.e_commercetokobangunan_koma.models.AddProductModel
 import com.example.e_commercetokobangunan_koma.viewmodels.AddProductViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlin.properties.Delegates
-import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.storage.ktx.storage
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 
 class AddProductActivity : AppCompatActivity() {
@@ -45,20 +44,6 @@ class AddProductActivity : AppCompatActivity() {
         //Action Bar Name
         getSupportActionBar()?.setTitle("Tambah Produk")
 
-        lateinit var nama: String
-        lateinit var harga: String
-        lateinit var deskripsi: String
-        lateinit var linkVideo: String
-        lateinit var jumlahStok: String
-        var kondisiBaru by Delegates.notNull<Boolean>()
-        var kondisiBekas by Delegates.notNull<Boolean>()
-        lateinit var berat: String
-
-        var permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA,
-        )
-
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -74,37 +59,6 @@ class AddProductActivity : AppCompatActivity() {
                 adapterProduct.setSelectedImages(images)
             }
         }
-
-        binding.btnAddProduct.setOnClickListener(View.OnClickListener {
-            nama = binding.etNama.text.toString().trim()
-            harga = binding.etHarga.text.toString().trim()
-            deskripsi = binding.etDeskripsi.text.toString().trim()
-            linkVideo = binding.etLinkVideo.text.toString().trim()
-            jumlahStok = binding.etJumlahStok.text.toString().trim()
-            berat = binding.etBerat.text.toString().trim()
-            kondisiBaru = binding.radioButtonBaru.isChecked
-            kondisiBekas = binding.radioButtonBekas.isChecked
-
-            Toast.makeText(this, jumlahStok, Toast.LENGTH_SHORT).show()
-
-            if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas)){
-                addProduct(nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru)
-            }
-
-        })
-
-        binding.textViewSelectImage.setOnClickListener(View.OnClickListener {
-            if(isAllPermissionsGranted(permissions.toList()).equals(false)){
-                requestMultiplePermissions.launch(permissions)
-            } else {
-                var intent = Intent()
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                intent.action = Intent.ACTION_GET_CONTENT
-                startActivityForResult( Intent.createChooser(intent, "Choose Pictures"), REQUEST_CODE)
-            }
-        })
-
     }
 
 
@@ -112,9 +66,53 @@ class AddProductActivity : AppCompatActivity() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
-//        if(currentUser != null){
-//            startActivity(Intent(this, WelcomeActivity::class.java))
-//        }
+        if(currentUser != null){
+
+            var permissions = arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+            )
+
+            lateinit var nama: String
+            lateinit var harga: String
+            lateinit var deskripsi: String
+            lateinit var linkVideo: String
+            lateinit var jumlahStok: String
+            var kondisiBaru by Delegates.notNull<Boolean>()
+            var kondisiBekas by Delegates.notNull<Boolean>()
+            lateinit var berat: String
+
+            binding.btnAddProduct.setOnClickListener(View.OnClickListener {
+                nama = binding.etNama.text.toString().trim()
+                harga = binding.etHarga.text.toString().trim()
+                deskripsi = binding.etDeskripsi.text.toString().trim()
+                linkVideo = binding.etLinkVideo.text.toString().trim()
+                jumlahStok = binding.etJumlahStok.text.toString().trim()
+                berat = binding.etBerat.text.toString().trim()
+                kondisiBaru = binding.radioButtonBaru.isChecked
+                kondisiBekas = binding.radioButtonBekas.isChecked
+
+                if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas)){
+                    addProduct(currentUser.uid, nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru)
+                }
+
+            })
+
+            binding.textViewSelectImage.setOnClickListener(View.OnClickListener {
+                if(isAllPermissionsGranted(permissions.toList()).equals(false)){
+                    requestMultiplePermissions.launch(permissions)
+                } else {
+                    var intent = Intent()
+                    intent.type = "image/*"
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    intent.action = Intent.ACTION_GET_CONTENT
+                    startActivityForResult( Intent.createChooser(intent, "Choose Pictures"), REQUEST_CODE)
+                }
+            })
+
+        }else{
+            startActivity(Intent(this, WelcomeActivity::class.java))
+        }
     }
 
 
@@ -224,10 +222,10 @@ class AddProductActivity : AppCompatActivity() {
 
 
 
-    fun addProduct(nama: String, harga: String, deskripsi: String, linkVideo: String, jumlahStok: String,
+    fun addProduct(idUser: String, nama: String, harga: String, deskripsi: String, linkVideo: String, jumlahStok: String,
                    berat: String, kondisiBaru: Boolean){
 
-        val data = ProductModel(nama, harga.toLong(), deskripsi, linkVideo, jumlahStok.toLong(), berat.toFloat(),
+        val data = AddProductModel(idUser, nama, harga.toLong(), deskripsi, linkVideo, jumlahStok.toLong(), berat.toDouble(),
         kondisiBaru)
 
         Firebase.firestore.collection("product")

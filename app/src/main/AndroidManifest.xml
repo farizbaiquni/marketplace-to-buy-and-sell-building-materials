@@ -13,16 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
+            android:name=".ProductDetailActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
+        <activity
             android:name=".AddProfileShopActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ShopProductListActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".AddProductActivity"
             android:exported="true"
-            android:parentActivityName=".ShopProductListActivity"/>
+            android:parentActivityName=".ShopProductListActivity" />
         <activity
             android:name=".WelcomeActivity"
             android:exported="true" />
@@ -39,6 +44,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

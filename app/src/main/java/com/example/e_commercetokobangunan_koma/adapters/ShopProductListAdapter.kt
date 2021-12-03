@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.e_commercetokobangunan_koma.R
-import com.example.e_commercetokobangunan_koma.models.ProductModel
 import com.example.e_commercetokobangunan_koma.models.ShopProductListModel
 
 class ShopProductListAdapter (private val mContext: Context)

@@ -17,23 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
-<!--            <ImageView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:scaleType="centerCrop"-->
-<!--                android:src="@drawable/keramik_motif_kayu"/>-->
 
-            <com.google.android.material.slider.Slider
-                android:id="@+id/slider"
+            <com.smarteist.autoimageslider.SliderView
+                android:id="@+id/images_slider_product_detail"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_centerInParent="true"
+                android:layout_height="300dp"
                 app:sliderAnimationDuration="600"
                 app:sliderAutoCycleDirection="back_and_forth"
+                app:sliderAutoCycleEnabled="true"
                 app:sliderIndicatorAnimationDuration="600"
-                app:sliderIndicatorEnabled="true"
                 app:sliderIndicatorGravity="center_horizontal|bottom"
                 app:sliderIndicatorMargin="15dp"
                 app:sliderIndicatorOrientation="horizontal"
@@ -41,7 +35,9 @@
                 app:sliderIndicatorRadius="2dp"
                 app:sliderIndicatorSelectedColor="#5A5A5A"
                 app:sliderIndicatorUnselectedColor="#FFF"
-                app:sliderScrollTimeInSec="1" />
+                app:sliderScrollTimeInSec="1"
+                app:sliderStartAutoCycle="true" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"

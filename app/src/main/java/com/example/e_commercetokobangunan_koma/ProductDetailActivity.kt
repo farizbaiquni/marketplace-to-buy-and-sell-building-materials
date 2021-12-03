@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.e_commercetokobangunan_koma.adapters.SliderExploreAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.example.e_commercetokobangunan_koma.databinding.ActivityProductDetailBinding
 import com.example.e_commercetokobangunan_koma.models.ProductDetailModel
@@ -15,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.smarteist.autoimageslider.SliderView
 
 class ProductDetailActivity : AppCompatActivity() {
 
@@ -23,6 +26,7 @@ class ProductDetailActivity : AppCompatActivity() {
     private lateinit var viewModel: ProductDetailViewModel
     private lateinit var idProduct: String
     private lateinit var idUser: String
+    private lateinit var sliderImagesAdapter: SliderExploreAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +48,15 @@ class ProductDetailActivity : AppCompatActivity() {
         idProduct = bundle?.get("idProduct").toString()
         idUser = bundle?.get("idUser").toString()
 
+        //Slider Adapter
+        sliderImagesAdapter = SliderExploreAdapter()
+        binding.imagesSliderProductDetail.autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR
+        binding.imagesSliderProductDetail.setSliderAdapter(sliderImagesAdapter)
+        binding.imagesSliderProductDetail.setScrollTimeInSec(3)
+        binding.imagesSliderProductDetail.setAutoCycle(true)
+        binding.imagesSliderProductDetail.startAutoCycle()
 
+        //Shimmer
         binding.shimmerProductDetail.startShimmer()
         getShopInformation(idProduct, idUser)
 
@@ -59,9 +71,17 @@ class ProductDetailActivity : AppCompatActivity() {
                 } else {
                     binding.productDetailCondition.text = "Bekas"
                 }
+                binding.productDetailShopName.text = productDetail.shop_name.toString()
+
                 binding.productDetail.visibility = View.VISIBLE
                 binding.shimmerProductDetail.stopShimmer()
                 binding.shimmerProductDetail.visibility = View.GONE
+            }
+        }
+
+        viewModel.getProductPhotosUrl().observe(this){ photosUrl ->
+            if(!photosUrl.isNullOrEmpty()){
+                sliderImagesAdapter.setPhotosUrl(photosUrl)
             }
         }
 
@@ -79,52 +99,76 @@ class ProductDetailActivity : AppCompatActivity() {
     fun getShopInformation(idProduct: String, idUser: String){
         var shopPhoto = ""
         var shopName = ""
-        var docRef = Firebase.firestore.collection("shop").document(idProduct)
-        docRef.get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    // Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+        Firebase.firestore.collection("shop")
+            .whereEqualTo("id_user", idUser)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
                     shopPhoto = document.data?.get("photo_url").toString()
                     shopName = document.data?.get("name").toString()
-                    getProduct(idUser, shopPhoto, shopName)
-                } else {
-                    // Log.d(TAG, "No such document")
-                    getProduct(idUser, shopPhoto, shopName)
+                    getPhotosUrl(idProduct, shopPhoto, shopName)
                 }
             }
             .addOnFailureListener { exception ->
-                // Log.d(TAG, "get failed with ", exception)
-                getProduct(idUser, shopPhoto, shopName)
+                //Log.d(TAG, "Error getting documents: ", exception)
+                getPhotosUrl(idProduct, shopPhoto, shopName)
             }
     }
 
-    fun getProduct(idUser: String, shopPhoto: String, shopName: String){
+    fun getPhotosUrl(idProduct: String, shopPhoto: String, shopName: String){
+        var photosUrl: MutableList<String> = mutableListOf()
+        Firebase.firestore.collection("product").document(idProduct).collection("photos")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    photosUrl.add(document.data?.get("photo_url").toString())
+                }
+                viewModel.setProductPhotosUrl(photosUrl)
+                getProduct(idProduct, shopPhoto, shopName)
+            }
+            .addOnFailureListener { exception ->
+                getProduct(idProduct, shopPhoto, shopName)
+            }
+    }
+
+
+    fun getProduct(idProduct: String, shopPhoto: String, shopName: String){
         var name = ""
         var price: Long = 0
         var description = ""
         var stock: Long = 0
         var weight: Double = 0.0
         var condition = true
-        Firebase.firestore.collection("product")
-            .whereEqualTo("id_user", idUser)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
+
+        var docRef = Firebase.firestore.collection("product").document(idProduct)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    // Log.d(TAG, "DocumentSnapshot data: ${document.data}")
                     name = document.data?.get("name").toString()
                     price = document.data?.get("price") as Long
                     description = document.data?.get("description").toString()
                     stock = document.data?.get("stock") as Long
                     weight = document.data?.get("weight") as Double
                     condition = document.data?.get("newCondition") as Boolean
-                }
-                viewModel.setProductDetail(ProductDetailModel(name, price, description, stock, weight,
-                    condition, shopPhoto, shopName))
 
+                    viewModel.setProductDetail(ProductDetailModel(name, price, description, stock, weight,
+                        condition, shopPhoto, shopName))
+
+                } else {
+                    // Log.d(TAG, "No such document")
+                    binding.shimmerProductDetail.stopShimmer()
+                    binding.productDetail.visibility = View.GONE
+                    Toast.makeText(this, "Produk tidak ditemukan", Toast.LENGTH_SHORT).show()
+                }
             }
             .addOnFailureListener { exception ->
+                // Log.d(TAG, "get failed with ", exception)
+                binding.shimmerProductDetail.stopShimmer()
+                binding.productDetail.visibility = View.GONE
                 Toast.makeText(this, "Gagal mendapatkan data produk", Toast.LENGTH_SHORT).show()
             }
     }
+
 
 }// End class

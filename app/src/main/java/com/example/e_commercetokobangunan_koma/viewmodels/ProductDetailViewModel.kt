@@ -10,9 +10,19 @@ class ProductDetailViewModel {
     fun getProductDetail(): MutableLiveData<ProductDetailModel>{
         return this.productDetail
     }
-
     fun setProductDetail(product: ProductDetailModel){
         this.productDetail.value = product
+    }
+
+
+    private var productPhotosUrl: MutableLiveData<MutableList<String>> = MutableLiveData<MutableList<String>>().apply {
+        postValue(mutableListOf())
+    }
+    fun getProductPhotosUrl(): MutableLiveData<MutableList<String>>{
+        return this.productPhotosUrl
+    }
+    fun setProductPhotosUrl(photosUrl: MutableList<String>){
+        this.productPhotosUrl.value = photosUrl
     }
 
 }

@@ -52,7 +52,7 @@ class ExploreAdapter (ctx: Context)
                 holder.harga.text = "Rp." + products!!.get(position).price.toString()
                 holder.cardView.setOnClickListener(View.OnClickListener {
                     var intent: Intent = Intent(mContext, ProductDetailActivity::class.java)
-                    intent.putExtra("idProduct", products!!.get(position).idUser)
+                    intent.putExtra("idProduct", products!!.get(position).idProduct)
                     intent.putExtra("idUser", products!!.get(position).idUser)
                     mContext.startActivity(intent)
                 })

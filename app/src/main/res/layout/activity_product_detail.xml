@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".ProductDetailActivity"
-    android:orientation="vertical"
     android:background="#d3d3d3">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp">
 
         <LinearLayout
             android:id="@+id/product_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
 
             <com.smarteist.autoimageslider.SliderView
@@ -81,13 +82,12 @@
 
                     <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
+                        android:layout_height="wrap_content">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Detail Produk"
+                            android:text="Informasi Produk"
                             android:textSize="15sp"
                             android:paddingRight="60dp"
                             android:textStyle="bold"/>
@@ -189,8 +189,7 @@
                         android:layout_height="wrap_content"
                         android:text="Deskripsi"
                         android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:layout_marginTop="15dp"/>
+                        android:textSize="15sp"/>
 
                     <TextView
                         android:id="@+id/product_detail_description"
@@ -236,6 +235,54 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <FrameLayout
+        android:id="@+id/standard_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        style="?attr/bottomSheetStyle"
+        android:background="@color/white"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="#ced4da"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btn_review"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:text="Review"
+                android:background="#9d0208"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"/>
+
+            <Button
+                android:id="@+id/btn_buy"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:text="Beli"
+                android:background="#1e6091"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_product_detail"
         android:layout_width="match_parent"
@@ -243,11 +290,12 @@
         android:animateLayoutChanges="true"
         android:animationCache="true"
         app:shimmer_repeat_mode="restart"
-        app:shimmer_shape="radial">
+        app:shimmer_shape="radial"
+        android:visibility="gone">
 
         <include layout="@layout/shimmer_product_detail"/>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

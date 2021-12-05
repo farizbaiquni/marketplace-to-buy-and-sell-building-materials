@@ -13,10 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
+            android:name=".PaymentActivity"
+            android:exported="true" />
+        <activity
             android:name=".ProductDetailActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight"/>
+            android:theme="@style/Theme.AppCompat.DayNight" />
         <activity
             android:name=".AddProfileShopActivity"
             android:exported="true"

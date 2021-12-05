@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShopProductListActivity"
-    android:padding="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#f8f9fa">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_shop_product_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#e9ecef"/>
+        android:layout_margin="10dp"/>
 
 </LinearLayout>

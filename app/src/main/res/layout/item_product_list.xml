@@ -18,7 +18,7 @@
         <ImageView
             android:id="@+id/product_list_photo"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="170dp"
             android:scaleType="centerCrop"
             android:src="@drawable/keramik_motif_kayu"
             android:contentDescription="product"

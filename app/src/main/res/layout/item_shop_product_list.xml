@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="3dp">
+    android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -21,7 +20,7 @@
             <ImageView
                 android:id="@+id/shop_product_image"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="170dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/keramik_motif_kayu"
                 android:contentDescription="product"

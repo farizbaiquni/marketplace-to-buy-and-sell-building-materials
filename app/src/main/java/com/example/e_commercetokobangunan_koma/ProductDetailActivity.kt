@@ -36,7 +36,7 @@ class ProductDetailActivity : AppCompatActivity() {
         setContentView(view)
 
         //Action Bar
-        getSupportActionBar()?.setTitle("Detail Product")
+        getSupportActionBar()?.setTitle("Detail Produk")
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -53,13 +53,11 @@ class ProductDetailActivity : AppCompatActivity() {
         binding.imagesSliderProductDetail.autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR
         binding.imagesSliderProductDetail.setSliderAdapter(sliderImagesAdapter)
         binding.imagesSliderProductDetail.setScrollTimeInSec(3)
-        binding.imagesSliderProductDetail.setAutoCycle(true)
-        binding.imagesSliderProductDetail.startAutoCycle()
 
         //Shimmer
         binding.shimmerProductDetail.startShimmer()
-        getShopInformation(idProduct, idUser)
 
+        getShopInformation(idProduct, idUser)
         viewModel.getProductDetail().observe(this){ productDetail ->
             if(productDetail != null){
                 binding.productDetailName.text = productDetail.name.toString()
@@ -76,6 +74,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 binding.productDetail.visibility = View.VISIBLE
                 binding.shimmerProductDetail.stopShimmer()
                 binding.shimmerProductDetail.visibility = View.GONE
+
             }
         }
 
@@ -85,6 +84,7 @@ class ProductDetailActivity : AppCompatActivity() {
             }
         }
 
+
     }// End onCreate
 
     override fun onStart() {
@@ -92,6 +92,13 @@ class ProductDetailActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if(currentUser == null){
             startActivity(Intent(this, WelcomeActivity::class.java))
+        } else {
+            binding.btnBuy.setOnClickListener(View.OnClickListener {
+                if(viewModel.getProductDetail().value != null)
+                    startActivity(Intent(this, PaymentActivity::class.java).apply {
+                        putExtra("id_product", viewModel.getProductDetail().value?.id_product)
+                    })
+            })
         }
     }// End onStart
 
@@ -133,6 +140,7 @@ class ProductDetailActivity : AppCompatActivity() {
 
 
     fun getProduct(idProduct: String, shopPhoto: String, shopName: String){
+        var id_product = ""
         var name = ""
         var price: Long = 0
         var description = ""
@@ -145,6 +153,7 @@ class ProductDetailActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     // Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                    id_product = document.id
                     name = document.data?.get("name").toString()
                     price = document.data?.get("price") as Long
                     description = document.data?.get("description").toString()
@@ -152,7 +161,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     weight = document.data?.get("weight") as Double
                     condition = document.data?.get("newCondition") as Boolean
 
-                    viewModel.setProductDetail(ProductDetailModel(name, price, description, stock, weight,
+                    viewModel.setProductDetail(ProductDetailModel(id_product, name, price, description, stock, weight,
                         condition, shopPhoto, shopName))
 
                 } else {

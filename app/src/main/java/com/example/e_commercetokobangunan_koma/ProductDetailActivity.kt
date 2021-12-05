@@ -99,6 +99,11 @@ class ProductDetailActivity : AppCompatActivity() {
                         putExtra("id_product", viewModel.getProductDetail().value?.id_product)
                     })
             })
+
+            binding.btnReview.setOnClickListener(View.OnClickListener {
+                val modalBottomSheet = TypeReviewBottomSheetFragment()
+                modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
+            })
         }
     }// End onStart
 

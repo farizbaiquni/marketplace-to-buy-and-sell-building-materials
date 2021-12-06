@@ -7,8 +7,8 @@ data class ProductDetailModel(
     var description: String? = null,
     var stock: Long? = null,
     var weight: Double? = null,
-    var conditionNew: Boolean? = null,
+    var condition_new: Boolean? = null,
     var shop_photo: String? = null,
     var shop_name: String? = null,
 
-)
+    )

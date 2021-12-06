@@ -1,15 +1,11 @@
 package com.example.e_commercetokobangunan_koma
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.e_commercetokobangunan_koma.adapters.SliderExploreAdapter
-import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.example.e_commercetokobangunan_koma.databinding.ActivityProductDetailBinding
 import com.example.e_commercetokobangunan_koma.models.ProductDetailModel
 import com.example.e_commercetokobangunan_koma.viewmodels.ProductDetailViewModel
@@ -64,7 +60,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 binding.productDetailPrice.text = "Rp." + productDetail.price.toString()
                 binding.productDetailDescription.text = productDetail.description.toString()
                 binding.productDetailWeight.text = productDetail.weight.toString()
-                if(productDetail.conditionNew == true){
+                if(productDetail.condition_new == true){
                     binding.productDetailCondition.text = "Baru"
                 } else {
                     binding.productDetailCondition.text = "Bekas"
@@ -117,7 +113,7 @@ class ProductDetailActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 for (document in result) {
                     shopPhoto = document.data?.get("photo_url").toString()
-                    shopName = document.data?.get("name").toString()
+                    shopName = document.data?.get("nama").toString()
                     getPhotosUrl(idProduct, shopPhoto, shopName)
                 }
             }

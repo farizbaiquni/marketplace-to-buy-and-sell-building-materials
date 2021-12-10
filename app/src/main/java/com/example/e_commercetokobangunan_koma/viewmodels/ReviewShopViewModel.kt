@@ -7,28 +7,6 @@ import com.example.e_commercetokobangunan_koma.models.ReviewShopUserModel
 
 class ReviewShopViewModel: ViewModel() {
 
-    private var historyReviewShopUser: MutableLiveData<MutableList<ReviewShopUserModel>> = MutableLiveData<MutableList<ReviewShopUserModel>>().apply {
-        postValue(mutableListOf())
-    }
-    fun setHistoryReviewShopUser(data: MutableList<ReviewShopUserModel>){
-        this.historyReviewShopUser.value = data
-    }
-    fun getHistoryReviewShopUser(): MutableLiveData<MutableList<ReviewShopUserModel>>{
-        return this.historyReviewShopUser
-    }
-
-
-    private var historyReview: MutableLiveData<MutableList<String>> = MutableLiveData<MutableList<String>>().apply {
-        postValue(mutableListOf())
-    }
-    fun getHistoryReview(): MutableLiveData<MutableList<String>>{
-        return this.historyReview
-    }
-    fun setHistoryReview(data: MutableList<String>){
-        this.historyReview.value = data
-    }
-
-
     private var permittedReview: MutableLiveData<MutableList<String>> = MutableLiveData<MutableList<String>>().apply {
         postValue(mutableListOf())
     }
@@ -40,14 +18,15 @@ class ReviewShopViewModel: ViewModel() {
     }
 
 
-    private var reviewShop: MutableLiveData<ReviewShopModel> = MutableLiveData<ReviewShopModel>().apply {
-        postValue(null)
+
+    private var historyReviewShopUser: MutableLiveData<MutableMap<String, ReviewShopUserModel>> = MutableLiveData<MutableMap<String, ReviewShopUserModel>>().apply {
+        postValue(mutableMapOf())
     }
-    fun setReviewShop(data: ReviewShopModel){
-        this.reviewShop.value = data
+    fun setHistoryReviewShopUser(data: MutableMap<String, ReviewShopUserModel>){
+        this.historyReviewShopUser.value = data
     }
-    fun getReviewShop(): MutableLiveData<ReviewShopModel>{
-        return this.reviewShop
+    fun getHistoryReviewShopUser(): MutableLiveData<MutableMap<String, ReviewShopUserModel>>{
+        return this.historyReviewShopUser
     }
 
 }

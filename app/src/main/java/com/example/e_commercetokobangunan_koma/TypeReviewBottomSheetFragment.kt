@@ -16,7 +16,7 @@ import com.example.e_commercetokobangunan_koma.databinding.FragmentTypeReviewBot
 import com.example.e_commercetokobangunan_koma.viewmodels.ExploreViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class TypeReviewBottomSheetFragment : BottomSheetDialogFragment() {
+class TypeReviewBottomSheetFragment(var idShop: String) : BottomSheetDialogFragment() {
 
     private var _binding: FragmentTypeReviewBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -38,7 +38,9 @@ class TypeReviewBottomSheetFragment : BottomSheetDialogFragment() {
         })
 
         binding.btnReviewShop.setOnClickListener(View.OnClickListener {
-            startActivity(Intent(activity, ReviewShopActivity::class.java))
+            startActivity(Intent(activity, ReviewShopActivity::class.java).apply {
+                putExtra("idShop", idShop)
+            })
 
         })
         return view

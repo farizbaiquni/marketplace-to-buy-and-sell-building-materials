@@ -25,4 +25,14 @@ class ProductDetailViewModel {
         this.productPhotosUrl.value = photosUrl
     }
 
+    private var idShop: MutableLiveData<String> = MutableLiveData<String>().apply {
+        postValue(null)
+    }
+    fun getIdShop(): MutableLiveData<String>{
+        return this.idShop
+    }
+    fun setIdShop(id: String){
+        this.idShop.value = id
+    }
+
 }

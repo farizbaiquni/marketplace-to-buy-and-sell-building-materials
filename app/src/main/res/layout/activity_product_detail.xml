@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
 
             <com.smarteist.autoimageslider.SliderView
@@ -241,7 +241,8 @@
         android:layout_height="50dp"
         style="?attr/bottomSheetStyle"
         android:background="@color/white"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        android:visibility="gone">
 
         <View
             android:layout_width="match_parent"
@@ -291,7 +292,7 @@
         android:animationCache="true"
         app:shimmer_repeat_mode="restart"
         app:shimmer_shape="radial"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <include layout="@layout/shimmer_product_detail"/>
 

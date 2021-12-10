@@ -53,7 +53,6 @@ class ProductDetailActivity : AppCompatActivity() {
         //Shimmer
         binding.shimmerProductDetail.startShimmer()
 
-        getShopInformation(idProduct, idUser)
         viewModel.getProductDetail().observe(this){ productDetail ->
             if(productDetail != null){
                 binding.productDetailName.text = productDetail.name.toString()
@@ -68,6 +67,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 binding.productDetailShopName.text = productDetail.shop_name.toString()
 
                 binding.productDetail.visibility = View.VISIBLE
+                binding.standardBottomSheet.visibility = View.VISIBLE
                 binding.shimmerProductDetail.stopShimmer()
                 binding.shimmerProductDetail.visibility = View.GONE
 
@@ -80,6 +80,14 @@ class ProductDetailActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.getIdShop().observe(this){ idShop ->
+            if(!idShop.isNullOrEmpty()){
+                binding.btnReview.setOnClickListener(View.OnClickListener {
+                    val modalBottomSheet = TypeReviewBottomSheetFragment(idShop)
+                    modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
+                })
+            }
+        }
 
     }// End onCreate
 
@@ -89,16 +97,12 @@ class ProductDetailActivity : AppCompatActivity() {
         if(currentUser == null){
             startActivity(Intent(this, WelcomeActivity::class.java))
         } else {
+            getShopInformation(idProduct, idUser)
             binding.btnBuy.setOnClickListener(View.OnClickListener {
                 if(viewModel.getProductDetail().value != null)
                     startActivity(Intent(this, PaymentActivity::class.java).apply {
                         putExtra("id_product", viewModel.getProductDetail().value?.id_product)
                     })
-            })
-
-            binding.btnReview.setOnClickListener(View.OnClickListener {
-                val modalBottomSheet = TypeReviewBottomSheetFragment()
-                modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
             })
         }
     }// End onStart
@@ -109,12 +113,14 @@ class ProductDetailActivity : AppCompatActivity() {
         var shopName = ""
         Firebase.firestore.collection("shop")
             .whereEqualTo("id_user", idUser)
+            .limit(1)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     shopPhoto = document.data?.get("photo_url").toString()
                     shopName = document.data?.get("nama").toString()
                     getPhotosUrl(idProduct, shopPhoto, shopName)
+                    viewModel.setIdShop(document.id)
                 }
             }
             .addOnFailureListener { exception ->
@@ -169,6 +175,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     // Log.d(TAG, "No such document")
                     binding.shimmerProductDetail.stopShimmer()
                     binding.productDetail.visibility = View.GONE
+                    binding.standardBottomSheet.visibility = View.GONE
                     Toast.makeText(this, "Produk tidak ditemukan", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -176,6 +183,7 @@ class ProductDetailActivity : AppCompatActivity() {
                 // Log.d(TAG, "get failed with ", exception)
                 binding.shimmerProductDetail.stopShimmer()
                 binding.productDetail.visibility = View.GONE
+                binding.standardBottomSheet.visibility = View.GONE
                 Toast.makeText(this, "Gagal mendapatkan data produk", Toast.LENGTH_SHORT).show()
             }
     }

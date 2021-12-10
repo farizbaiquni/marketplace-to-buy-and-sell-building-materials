@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.e_commercetokobangunan_koma.adapters.MainViewPagerAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -31,9 +32,19 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
-        binding.btnSignOut.setOnClickListener(View.OnClickListener {
-            Firebase.auth.signOut()
-        })
+        //Bottom Navigation
+        val exploreFragment = ExploreFragment()
+        val chartsFragment = ChartsFragment()
+
+        setCurrentFragment(exploreFragment)
+
+        binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
+            when(it.itemId){
+                R.id.bottom_navigation_explore->setCurrentFragment(exploreFragment)
+                R.id.bottom_navigation_chats->setCurrentFragment(chartsFragment)
+            }
+            true
+        }
 
     }// End onCreate
 
@@ -45,18 +56,14 @@ class MainActivity : AppCompatActivity() {
         if(currentUser == null){
             intentActivity = Intent(this, WelcomeActivity::class.java)
             startActivity(intentActivity)
-        }else{
-            tabOptions = arrayOf("EXPLORE", "CHARTS")
-
-            //Adapter View Pager
-            val adapter = MainViewPagerAdapter(supportFragmentManager, lifecycle)
-            binding.viewPager.adapter = adapter
-
-            TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-                tab.text = tabOptions[position]
-            }.attach()
         }
-    }
+    } // End onStart
+
+
+    private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
+            replace(R.id.frame_layout_main_activity, fragment)
+            commit()
+        }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -79,4 +86,5 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

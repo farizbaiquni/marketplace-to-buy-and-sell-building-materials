@@ -9,12 +9,12 @@
         android:title="Tambah Produk"/>
 
     <item
-        android:id="@+id/menu_buyer_profil"
+        android:id="@+id/menu_seller_profile_toko"
         app:showAsAction="never|withText"
         android:title="Profil Toko"/>
 
     <item
-        android:id="@+id/menu_buyer_exit_toko"
+        android:id="@+id/menu_seller_exit_toko"
         app:showAsAction="never|withText"
         android:title="Exit Toko"/>
 

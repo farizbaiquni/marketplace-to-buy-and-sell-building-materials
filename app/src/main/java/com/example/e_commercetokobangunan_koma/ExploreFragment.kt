@@ -16,7 +16,7 @@ import com.example.e_commercetokobangunan_koma.viewmodels.ExploreViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class ExploreFragment : Fragment() {
+class ExploreFragment : Fragment(R.layout.explore_fragment) {
 
     private var _binding: ExploreFragmentBinding? = null
     private val binding get() = _binding!!

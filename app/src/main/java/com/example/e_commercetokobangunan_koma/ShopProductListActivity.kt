@@ -98,7 +98,12 @@ class ShopProductListActivity : AppCompatActivity() {
                 // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
                 true
             }
-            R.id.menu_buyer_exit_toko -> {
+            R.id.menu_seller_profile_toko -> {
+                // startActivity(Intent(this, AddProductActivity::class.java))
+                Toast.makeText(this, "Profile Toko", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.menu_seller_exit_toko -> {
                 startActivity(Intent(this, MainActivity::class.java))
                 // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
                 true

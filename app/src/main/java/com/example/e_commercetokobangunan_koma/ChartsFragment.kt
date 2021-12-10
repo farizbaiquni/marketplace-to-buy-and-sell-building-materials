@@ -10,7 +10,7 @@ import com.example.e_commercetokobangunan_koma.databinding.ChartsFragmentBinding
 import com.example.e_commercetokobangunan_koma.databinding.ExploreFragmentBinding
 import com.example.e_commercetokobangunan_koma.viewmodels.ChartsViewModel
 
-class ChartsFragment : Fragment() {
+class ChartsFragment : Fragment(R.layout.charts_fragment) {
 
     private var _binding: ChartsFragmentBinding? = null
     private val binding get() = _binding!!

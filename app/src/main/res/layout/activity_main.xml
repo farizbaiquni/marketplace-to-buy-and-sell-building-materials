@@ -7,20 +7,23 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <Button
-        android:id="@+id/btn_sign_out"
+    <FrameLayout
+        android:id="@+id/frame_layout_main_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SIGN OUT"/>
+        android:layout_weight="1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#adb5bd"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_main_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#dee2e6"
+        app:menu="@menu/bottom_navigation_main_activity" />
 
 </LinearLayout>

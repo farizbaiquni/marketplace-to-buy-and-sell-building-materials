@@ -17,6 +17,8 @@ import com.google.firebase.ktx.Firebase
 import com.smarteist.autoimageslider.SliderView
 import com.squareup.picasso.Picasso
 import java.lang.Exception
+import java.text.NumberFormat
+import java.util.*
 
 class ProductDetailActivity : AppCompatActivity() {
 
@@ -58,8 +60,13 @@ class ProductDetailActivity : AppCompatActivity() {
 
         viewModel.getProductDetail().observe(this){ productDetail ->
             if(productDetail != null){
+
+                val localeID = Locale("in", "ID")
+                val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
+                formatRupiah.maximumFractionDigits = 0
+
                 binding.productDetailName.text = productDetail.name.toString()
-                binding.productDetailPrice.text = "Rp." + productDetail.price.toString()
+                binding.productDetailPrice.text = formatRupiah.format(productDetail.price.toString().toInt())
                 binding.productDetailDescription.text = productDetail.description.toString()
                 binding.productDetailWeight.text = productDetail.weight.toString()
                 if(productDetail.condition_new == true){
@@ -172,7 +179,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     description = document.data?.get("description").toString()
                     stock = document.data?.get("stock") as Long
                     weight = document.data?.get("weight") as Double
-                    condition = document.data?.get("newCondition") as Boolean
+                    condition = document.data?.get("new_condition") as Boolean
 
                     viewModel.setProductDetail(ProductDetailModel(id_product, name, price, description, stock, weight,
                         condition, shopPhoto, shopName))

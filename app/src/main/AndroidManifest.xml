@@ -18,7 +18,8 @@
             android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".PaymentActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProductDetailActivity"
             android:exported="true"

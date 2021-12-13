@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        //Action Bar
+        getSupportActionBar()?.setTitle("Explore")
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -51,8 +54,16 @@ class MainActivity : AppCompatActivity() {
 
             binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
                 when(it.itemId){
-                    R.id.bottom_navigation_explore->setCurrentFragment(exploreFragment)
-                    R.id.bottom_navigation_chats->setCurrentFragment(chartsFragment)
+                    R.id.bottom_navigation_explore -> {
+                        //Action Bar
+                        getSupportActionBar()?.setTitle("Explore")
+                        setCurrentFragment(exploreFragment)
+                    }
+                    R.id.bottom_navigation_chats -> {
+                        //Action Bar
+                        getSupportActionBar()?.setTitle("Top Charts")
+                        setCurrentFragment(chartsFragment)
+                    }
                 }
                 true
             }

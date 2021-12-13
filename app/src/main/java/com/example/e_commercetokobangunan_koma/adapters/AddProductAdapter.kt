@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.e_commercetokobangunan_koma.R
 import java.io.IOException
@@ -24,9 +25,11 @@ class AddProductAdapter(private val mContext: Context)
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageProduct: ImageView
+        val default: TextView
 
         init {
             imageProduct = view.findViewById(R.id.img_item_product)
+            default = view.findViewById(R.id.text_view_default_photo)
         }
     }
 
@@ -38,7 +41,10 @@ class AddProductAdapter(private val mContext: Context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if(selectedImages != null){
+        if(!selectedImages.isNullOrEmpty()){
+            if(position == 0){
+                holder.default.visibility = View.VISIBLE
+            }
             var uri: Uri = selectedImages!!.get(position) ?: return
 
             try {

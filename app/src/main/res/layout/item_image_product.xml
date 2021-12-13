@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/img_item_product"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/add_student"
-        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_item_product"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/add_student" />
+
+        <TextView
+            android:id="@+id/text_view_default_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="default foto"
+            android:textColor="#2d6a4f"
+            android:layout_marginTop="2dp"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -70,8 +70,12 @@ class ExploreFragment : Fragment(R.layout.explore_fragment) {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    product = ProductListModel(document.id, document.getString("id_user"),
-                        document.getString("name"), document.getLong("price"))
+                    product = ProductListModel(document.id,
+                        document.getString("id_user"),
+                        document.getString("default_photo"),
+                        document.getString("name"),
+                        document.getLong("price")
+                    )
                     productList.add(product)
                 }
                 viewModel.setProductList(productList)

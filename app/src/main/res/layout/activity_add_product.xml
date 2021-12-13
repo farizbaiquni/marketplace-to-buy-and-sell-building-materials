@@ -39,6 +39,16 @@
                    android:gravity="end"/>
            </LinearLayout>
 
+           <TextView
+               android:id="@+id/text_view_error_select_photo"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Minimal harus ada 1 gambar produk"
+               android:textColor="#a4161a"
+               android:textSize="12sp"
+               android:gravity="end"
+               android:visibility="gone" />
+
            <androidx.recyclerview.widget.RecyclerView
                android:id="@+id/recycler_view_upload_images_product"
                android:layout_marginTop="10dp"

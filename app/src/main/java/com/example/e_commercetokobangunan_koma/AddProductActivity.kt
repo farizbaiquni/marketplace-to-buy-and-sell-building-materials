@@ -31,7 +31,7 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityAddProductBinding
     private lateinit var adapterProduct: AddProductAdapter
-    private lateinit var model: AddProductViewModel
+    private lateinit var viewModel: AddProductViewModel
 
     private var REQUEST_CODE: Int = 100
 
@@ -53,8 +53,8 @@ class AddProductActivity : AppCompatActivity() {
         binding.recyclerViewUploadImagesProduct.layoutManager = gridLayoutManager
         binding.recyclerViewUploadImagesProduct.adapter = adapterProduct
 
-        model = ViewModelProvider(this).get(AddProductViewModel::class.java)
-        model.getSelectedPhotos().observe(this) { images ->
+        viewModel = ViewModelProvider(this).get(AddProductViewModel::class.java)
+        viewModel.getSelectedPhotos().observe(this) { images ->
             if (images != null) {
                 adapterProduct.setSelectedImages(images)
             }
@@ -92,8 +92,10 @@ class AddProductActivity : AppCompatActivity() {
                 kondisiBaru = binding.radioButtonBaru.isChecked
                 kondisiBekas = binding.radioButtonBekas.isChecked
 
-                if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas)){
-                    addProduct(currentUser.uid, nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru)
+                if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas,
+                        viewModel.getSelectedPhotos().value!!
+                    )){
+                    addProduct(currentUser.uid, nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru,)
                 }
 
             })
@@ -130,12 +132,12 @@ class AddProductActivity : AppCompatActivity() {
                         imageListUri.add(data.clipData!!.getItemAt(i).uri)
                     }
                 }
-                    model.setSelectedPhotos(imageListUri)
+                    viewModel.setSelectedPhotos(imageListUri)
             }else if(data?.getData() != null) {
                 var imageUri: Uri? = data.data
                 if (imageUri != null) {
                     imageListUri.add(imageUri)
-                    model.setSelectedPhotos(imageListUri)
+                    viewModel.setSelectedPhotos(imageListUri)
                 }
             }
         }// End if
@@ -165,10 +167,16 @@ class AddProductActivity : AppCompatActivity() {
 
 
     fun validateForm(nama: String, harga: String, deskripsi: String, jumlakStok: String,
-    berat: String, kondisiBaru: Boolean, kondisiBekas: Boolean) : Boolean{
+    berat: String, kondisiBaru: Boolean, kondisiBekas: Boolean, photo: MutableList<Uri>) : Boolean{
 
         if(nama.isBlank() || harga.isBlank() || deskripsi.isBlank() || jumlakStok.isBlank() || berat.isBlank()
-            || kondisiBaru.equals(false) && kondisiBekas.equals(false)){
+            || kondisiBaru.equals(false) && kondisiBekas.equals(false) || photo.isNullOrEmpty()){
+
+            if(photo.isNullOrEmpty()){
+                binding.textViewErrorSelectPhoto.visibility = View.VISIBLE
+            } else {
+                binding.textViewErrorSelectPhoto.visibility = View.GONE
+            }
 
             if(nama.isBlank()){
                 binding.textFieldNama.error = "Tidak boleh kosong"
@@ -231,8 +239,8 @@ class AddProductActivity : AppCompatActivity() {
         Firebase.firestore.collection("product")
             .add(data)
             .addOnSuccessListener { documentReference ->
-                model.setIdProduct(documentReference.id.toString())
-                model.getSelectedPhotos().value?.let { uploadImages(it) }
+                viewModel.setIdProduct(documentReference.id)
+                viewModel.getSelectedPhotos().value?.let { uploadImages(it) }
             }
             .addOnFailureListener { e ->
             }
@@ -241,7 +249,7 @@ class AddProductActivity : AppCompatActivity() {
 
 
     fun uploadImages(imagesUri: MutableList<Uri>){
-        model.setPhotosProductUrl(mutableListOf())
+        viewModel.setPhotosProductUrl(mutableListOf())
         var storageRef = Firebase.storage.reference
         val iterator = imagesUri.iterator()
         var fileName: UUID?
@@ -254,21 +262,21 @@ class AddProductActivity : AppCompatActivity() {
                 if (!task.isSuccessful) {
                     task.exception?.let {}
                     if(!iterator.hasNext()){
-                        model.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
                     }
                 }
                 ref.downloadUrl
             }.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // val downloadUri = task.result
-                    model.addPhotosProductUrl(task.result.toString())
+                    viewModel.addPhotosProductUrl(task.result.toString())
                     if(!iterator.hasNext()){
-                        model.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
                     }
                 } else {
                     // Handle failures
                     if(!iterator.hasNext()){
-                        model.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
                     }
                 }
             }
@@ -278,13 +286,17 @@ class AddProductActivity : AppCompatActivity() {
 
 
     fun addPhotoProductUrl(photosUrl: MutableList<String>){
+
+        val productRef = Firebase.firestore.collection("product").document(viewModel.getIdProduct().value.toString())
+        productRef.update("default_photo", photosUrl[0])
+
         val iterator = photosUrl.iterator()
         while (iterator.hasNext()) {
             // Add a new document with a generated id.
             val data = hashMapOf(
                 "photo_url" to iterator.next(),
             )
-            model.getIdProduct().value?.let {
+            viewModel.getIdProduct().value?.let {
                 Firebase.firestore.collection("product").document(it).collection("photos")
                     .add(data)
                     .addOnSuccessListener { documentReference ->

@@ -66,7 +66,7 @@ class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder
                 holder.nama.text =  chartsList!!.get(position).nama
                 holder.provinsi.text =  chartsList!!.get(position).provinsi
                 holder.nilaiUlasan.text =  chartsList!!.get(position).nilai_ulasan
-                holder.jumlahUlasan.text =  chartsList!!.get(position).jumlah_ulasan
+                holder.jumlahUlasan.text =  chartsList!!.get(position).jumlah_ulasan + " ulasan"
                 holder.cardView.setOnClickListener(View.OnClickListener {
 //                    var intent: Intent = Intent(mContext, MainActivity::class.java)
 //                    mContext.startActivity(intent)

@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.e_commercetokobangunan_koma.ProductDetailActivity
 import com.example.e_commercetokobangunan_koma.R
 import com.example.e_commercetokobangunan_koma.models.ProductListModel
+import com.squareup.picasso.Picasso
+import java.io.IOException
+import java.text.NumberFormat
+import java.util.*
 
 class ExploreAdapter (ctx: Context)
     : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
@@ -46,10 +50,19 @@ class ExploreAdapter (ctx: Context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if(products != null){
+        if(!products.isNullOrEmpty()){
+
+            val localeID = Locale("in", "ID")
+            val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
+            formatRupiah.maximumFractionDigits = 0
+
             if(products?.get(position) != null){
+                try {
+                    Picasso.get().load(products!!.get(position).defaultPhoto).resize(100, 100).centerCrop().into(holder.imageProduct)
+                }catch (e: IOException){}
+
                 holder.name.text =  products!!.get(position).name
-                holder.harga.text = "Rp." + products!!.get(position).price.toString()
+                holder.harga.text = formatRupiah.format(products!!.get(position).price?.toInt())
                 holder.cardView.setOnClickListener(View.OnClickListener {
                     var intent: Intent = Intent(mContext, ProductDetailActivity::class.java)
                     intent.putExtra("idProduct", products!!.get(position).idProduct)

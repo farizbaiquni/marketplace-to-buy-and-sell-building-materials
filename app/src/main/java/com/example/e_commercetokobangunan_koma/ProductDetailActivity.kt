@@ -8,12 +8,15 @@ import android.widget.Toast
 import com.example.e_commercetokobangunan_koma.adapters.SliderExploreAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityProductDetailBinding
 import com.example.e_commercetokobangunan_koma.models.ProductDetailModel
+import com.example.e_commercetokobangunan_koma.models.SimpleShopProfileModel
 import com.example.e_commercetokobangunan_koma.viewmodels.ProductDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.smarteist.autoimageslider.SliderView
+import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class ProductDetailActivity : AppCompatActivity() {
 
@@ -80,6 +83,7 @@ class ProductDetailActivity : AppCompatActivity() {
             }
         }
 
+
         viewModel.getIdShop().observe(this){ idShop ->
             if(!idShop.isNullOrEmpty()){
                 binding.btnReview.setOnClickListener(View.OnClickListener {
@@ -109,23 +113,25 @@ class ProductDetailActivity : AppCompatActivity() {
 
 
     fun getShopInformation(idProduct: String, idUser: String){
-        var shopPhoto = ""
-        var shopName = ""
         Firebase.firestore.collection("shop")
             .whereEqualTo("id_user", idUser)
             .limit(1)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    shopPhoto = document.data?.get("photo_url").toString()
-                    shopName = document.data?.get("nama").toString()
-                    getPhotosUrl(idProduct, shopPhoto, shopName)
+                    try {
+                        Picasso.get().load(document.data.get("photo_url").toString()).into(binding.productDetailShopPhoto);
+                    }catch (e: Exception){ }
+                    binding.productDetailShopName.text = document.data.get("nama").toString()
+                    binding.productDetailShopProvinsi.text = document.data.get("provinsi").toString()
+
+                    getPhotosUrl(idProduct, document.data?.get("photo_url").toString(), document.data?.get("nama").toString())
                     viewModel.setIdShop(document.id)
                 }
             }
             .addOnFailureListener { exception ->
                 //Log.d(TAG, "Error getting documents: ", exception)
-                getPhotosUrl(idProduct, shopPhoto, shopName)
+                getPhotosUrl(idProduct, "", "")
             }
     }
 

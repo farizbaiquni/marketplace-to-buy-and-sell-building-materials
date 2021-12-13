@@ -6,12 +6,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.e_commercetokobangunan_koma.adapters.MainViewPagerAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -23,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var intentActivity: Intent
     private lateinit var tabOptions: Array<String>
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -32,19 +30,6 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
-        //Bottom Navigation
-        val exploreFragment = ExploreFragment()
-        val chartsFragment = ChartsFragment()
-
-        setCurrentFragment(exploreFragment)
-
-        binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
-            when(it.itemId){
-                R.id.bottom_navigation_explore->setCurrentFragment(exploreFragment)
-                R.id.bottom_navigation_chats->setCurrentFragment(chartsFragment)
-            }
-            true
-        }
 
     }// End onCreate
 
@@ -56,6 +41,21 @@ class MainActivity : AppCompatActivity() {
         if(currentUser == null){
             intentActivity = Intent(this, WelcomeActivity::class.java)
             startActivity(intentActivity)
+        }else{
+
+            //Bottom Navigation
+            val exploreFragment = ExploreFragment()
+            val chartsFragment = ChartsFragment(currentUser.uid)
+
+            setCurrentFragment(exploreFragment)
+
+            binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
+                when(it.itemId){
+                    R.id.bottom_navigation_explore->setCurrentFragment(exploreFragment)
+                    R.id.bottom_navigation_chats->setCurrentFragment(chartsFragment)
+                }
+                true
+            }
         }
     } // End onStart
 

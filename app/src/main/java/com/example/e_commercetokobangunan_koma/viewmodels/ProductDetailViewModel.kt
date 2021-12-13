@@ -2,8 +2,10 @@ package com.example.e_commercetokobangunan_koma.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import com.example.e_commercetokobangunan_koma.models.ProductDetailModel
+import com.example.e_commercetokobangunan_koma.models.SimpleShopProfileModel
 
 class ProductDetailViewModel {
+
     private var productDetail: MutableLiveData<ProductDetailModel> = MutableLiveData<ProductDetailModel>().apply {
         postValue(null)
     }
@@ -24,6 +26,7 @@ class ProductDetailViewModel {
     fun setProductPhotosUrl(photosUrl: MutableList<String>){
         this.productPhotosUrl.value = photosUrl
     }
+
 
     private var idShop: MutableLiveData<String> = MutableLiveData<String>().apply {
         postValue(null)

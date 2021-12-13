@@ -12,19 +12,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.e_commercetokobangunan_koma.databinding.ActivityReviewShopBinding
 import com.example.e_commercetokobangunan_koma.models.ReviewShopModel
 import com.example.e_commercetokobangunan_koma.models.ReviewShopUserModel
+import com.example.e_commercetokobangunan_koma.models.SimpleShopProfileModel
 import com.example.e_commercetokobangunan_koma.viewmodels.ReviewShopViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class ReviewShopActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityReviewShopBinding
     private lateinit var viewModel: ReviewShopViewModel
-    private lateinit var idShop: String
     private lateinit var builderLoadingDialog: AlertDialog.Builder
     private lateinit var loadingDialog: AlertDialog
+    private lateinit var idShop: String
 
     private var db = Firebase.firestore
 
@@ -101,7 +104,6 @@ class ReviewShopActivity : AppCompatActivity() {
     }
 
 
-
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -109,10 +111,48 @@ class ReviewShopActivity : AppCompatActivity() {
         if(currentUser == null){
             startActivity(Intent(this, WelcomeActivity::class.java))
         }else{
-            checkPermittedReview(currentUser.uid)
+            getShopInformation(currentUser.uid, idShop)
         }
     }
 
+
+    fun getShopInformation(idUser: String, idShop: String){
+        var shopProfile: SimpleShopProfileModel? = null
+        var alamat = "Kabupaten/Kota, Provinsi"
+        val docRef = db.collection("shop").document(idShop)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    try {
+                        Picasso.get().load(document.data?.get("photo_url").toString()).into(binding.shopPhotoUrl);
+                    }catch (e: Exception){ }
+                    binding.textViewShopName.text = document.data?.get("nama").toString()
+                    alamat = document.data?.get("kabupaten_kota").toString() +
+                            ", " +
+                            document.data?.get("provinsi").toString()
+                    binding.textViewShopAlamat.text = alamat
+
+                    shopProfile = SimpleShopProfileModel(
+                        document.id,
+                        document.data?.get("photo_url").toString(),
+                        document.data?.get("nama").toString(),
+                        document.data?.get("provinsi").toString(),
+                    )
+                }else{
+                    Toast.makeText(this, "TIDAK ADA DATA", Toast.LENGTH_SHORT).show()
+                }
+
+                shopProfile?.let { viewModel.setSimpleShopProfile(it) }
+                checkPermittedReview(idUser)
+
+            }
+            .addOnFailureListener { exception ->
+                binding.reviewShopLayout.visibility = View.VISIBLE
+                binding.shimmerReviewShop.stopShimmer()
+                binding.shimmerReviewShop.visibility = View.GONE
+                Toast.makeText(this, "Gagal mendapatkan informasi", Toast.LENGTH_SHORT).show()
+            }
+    }
 
 
     private fun checkPermittedReview(idUser: String){
@@ -136,7 +176,7 @@ class ReviewShopActivity : AppCompatActivity() {
                 binding.reviewShopLayout.visibility = View.VISIBLE
                 binding.shimmerReviewShop.stopShimmer()
                 binding.shimmerReviewShop.visibility = View.GONE
-                // Log.d(TAG, "Error getting documents: ", exception)
+                Toast.makeText(this, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -169,15 +209,15 @@ class ReviewShopActivity : AppCompatActivity() {
                 viewModel.setHistoryReviewShopUser(reviewShopUser)
                 binding.btnSubmit.isEnabled = true
 
+                binding.reviewShopLayout.visibility = View.VISIBLE
+                binding.shimmerReviewShop.stopShimmer()
+                binding.shimmerReviewShop.visibility = View.GONE
+
             }.addOnFailureListener { exception ->
                 binding.reviewShopLayout.visibility = View.VISIBLE
                 binding.shimmerReviewShop.stopShimmer()
                 binding.shimmerReviewShop.visibility = View.GONE
 
-                binding.btnDisableReviewDeskripsiFoto.visibility = View.VISIBLE
-                binding.btnDisableReviewFastRespone.visibility = View.VISIBLE
-                binding.btnDisableReviewKeramahan.visibility = View.VISIBLE
-                binding.btnDisableReviewKualitasPengemasan.visibility = View.VISIBLE
             }
 
     }
@@ -204,6 +244,9 @@ class ReviewShopActivity : AppCompatActivity() {
                         ReviewShopModel(
                             document.data["id_review_shop"].toString(),
                             document.data["id_shop"].toString(),
+                            document.data["shop_photo_url"].toString(),
+                            document.data["shop_name"].toString(),
+                            document.data["provinsi"].toString(),
                             document.data["category"].toString(),
                             document.data["result"].toString().toDouble(),
                             document.data["total_reviewer"].toString().toDouble().toInt(),
@@ -291,7 +334,16 @@ class ReviewShopActivity : AppCompatActivity() {
                             if(reviewShop.keys.contains("deskripsi_foto") == false){
                                 Log.d("ADD BOTH CALLED ?", "1")
                                 batch.set(reviewShopUserDeskripsiFotoRef, ReviewShopUserModel(reviewShopUserDeskripsiFotoRef.id, idShop, idUser, "deskripsi_foto", ratingBarDeskripsiFoto))
-                                batch.set(reviewShopDeskripsiFotoRef, ReviewShopModel(reviewShopDeskripsiFotoRef.id, idShop, "deskripsi_foto", ratingBarDeskripsiFoto, 1))
+                                batch.set(reviewShopDeskripsiFotoRef, ReviewShopModel(
+                                    reviewShopDeskripsiFotoRef.id,
+                                    idShop,
+                                    viewModel.getSimpleShopProfile().value?.photo_url.toString(),
+                                    viewModel.getSimpleShopProfile().value?.name.toString(),
+                                    viewModel.getSimpleShopProfile().value?.provinsi.toString(),
+                                    "deskripsi_foto",
+                                    ratingBarDeskripsiFoto,
+                                    1)
+                                )
 
                             // Jika hanya menambah review pada tabel review_shop_user
                             }else{
@@ -316,7 +368,15 @@ class ReviewShopActivity : AppCompatActivity() {
                             if(reviewShop.keys.contains("fast_respone") == false){
                                 Log.d("ADD BOTH CALLED ?", "2")
                                 batch.set(reviewShopUserFastResponeRef, ReviewShopUserModel(reviewShopUserFastResponeRef.id, idShop, idUser, "fast_respone", ratingBarFastRespone))
-                                batch.set(reviewShopFastResponeRef, ReviewShopModel(reviewShopFastResponeRef.id, idShop, "fast_respone", ratingBarFastRespone, 1))
+                                batch.set(reviewShopFastResponeRef, ReviewShopModel(
+                                    reviewShopFastResponeRef.id,
+                                    idShop,
+                                    viewModel.getSimpleShopProfile().value?.photo_url.toString(),
+                                    viewModel.getSimpleShopProfile().value?.name.toString(),
+                                    viewModel.getSimpleShopProfile().value?.provinsi.toString(),
+                                    "fast_respone",
+                                    ratingBarFastRespone, 1)
+                                )
 
                                 // Jika hanya menambah review pada tabel review_shop_user
                             }else{
@@ -341,7 +401,16 @@ class ReviewShopActivity : AppCompatActivity() {
                             if(reviewShop.keys.contains("keramahan") == false){
                                 Log.d("ADD BOTH CALLED ?", "3")
                                 batch.set(reviewShopUserKeramahanRef, ReviewShopUserModel(reviewShopUserKeramahanRef.id, idShop, idUser, "keramahan", ratingBarKeramahan))
-                                batch.set(reviewShopKeramahanRef, ReviewShopModel(reviewShopKeramahanRef.id, idShop, "keramahan", ratingBarKeramahan, 1))
+                                batch.set(reviewShopKeramahanRef, ReviewShopModel(
+                                    reviewShopKeramahanRef.id,
+                                    idShop,
+                                    viewModel.getSimpleShopProfile().value?.photo_url.toString(),
+                                    viewModel.getSimpleShopProfile().value?.name.toString(),
+                                    viewModel.getSimpleShopProfile().value?.provinsi.toString(),
+                                    "keramahan",
+                                    ratingBarKeramahan,
+                                    1)
+                                )
 
                                 // Jika hanya menambah review pada tabel review_shop_user
                             }else{
@@ -366,8 +435,16 @@ class ReviewShopActivity : AppCompatActivity() {
                             if(reviewShop.keys.contains("kualitas_pengemasan") == false){
                                 Log.d("ADD BOTH CALLED ?", "4")
                                 batch.set(reviewShopUserKualitasPengemasanRef, ReviewShopUserModel(reviewShopUserKualitasPengemasanRef.id, idShop, idUser, "kualitas_pengemasan", ratingBarPengemasan))
-                                batch.set(reviewShopKualitasPengemasanRef, ReviewShopModel(reviewShopKualitasPengemasanRef.id, idShop, "kualitas_pengemasan", ratingBarPengemasan, 1))
-
+                                batch.set(reviewShopKualitasPengemasanRef, ReviewShopModel(
+                                    reviewShopKualitasPengemasanRef.id,
+                                    idShop,
+                                    viewModel.getSimpleShopProfile().value?.photo_url.toString(),
+                                    viewModel.getSimpleShopProfile().value?.name.toString(),
+                                    viewModel.getSimpleShopProfile().value?.provinsi.toString(),
+                                    "kualitas_pengemasan",
+                                    ratingBarPengemasan,
+                                    1)
+                                )
                                 // Jika hanya menambah review pada tabel review_shop_user
                             }else{
                                 Log.d("ADD ONE CALLED ?", "4")

@@ -2,4 +2,12 @@
     <string name="app_name">E-Commerce</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="charts_category">
+        <item>Kualitas Pengemasan</item>
+        <item>Deskripsi dan Foto</item>
+        <item>Fast Respone</item>
+        <item>Keramahan</item>
+    </string-array>
+
 </resources>

@@ -11,7 +11,7 @@
         android:id="@+id/review_shop_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:visibility="gone">
 
 
         <LinearLayout
@@ -23,26 +23,29 @@
             android:layout_marginHorizontal="10dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/shop_photo_url"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/mart"/>
 
             <TextView
+                android:id="@+id/text_view_shop_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Toko Sejahtera"
+                android:text="Nama Toko"
                 android:gravity="center_horizontal"
                 android:textStyle="bold"
                 android:textSize="18dp"
                 android:textAllCaps="false"/>
 
             <TextView
+                android:id="@+id/text_view_shop_alamat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:text="Kendal, Jawa Tengah"
+                android:text="Kabupaten/Kota, Provinsi"
                 android:gravity="center_horizontal"
                 android:textSize="15dp"
                 android:textAllCaps="false"/>
@@ -286,7 +289,7 @@
         android:animationCache="true"
         app:shimmer_repeat_mode="restart"
         app:shimmer_shape="radial"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <include layout="@layout/shimmer_review_shop"/>
 

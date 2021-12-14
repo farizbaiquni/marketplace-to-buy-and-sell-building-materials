@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.e_commercetokobangunan_koma.MainActivity
 import com.example.e_commercetokobangunan_koma.ProductDetailActivity
 import com.example.e_commercetokobangunan_koma.R
+import com.example.e_commercetokobangunan_koma.ShopActivity
 import com.example.e_commercetokobangunan_koma.models.ChartsModel
 import com.squareup.picasso.Picasso
 import java.lang.Exception
@@ -68,8 +69,10 @@ class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder
                 holder.nilaiUlasan.text =  chartsList!!.get(position).nilai_ulasan
                 holder.jumlahUlasan.text =  chartsList!!.get(position).jumlah_ulasan + " ulasan"
                 holder.cardView.setOnClickListener(View.OnClickListener {
-//                    var intent: Intent = Intent(mContext, MainActivity::class.java)
-//                    mContext.startActivity(intent)
+                    var intent: Intent = Intent(mContext, ShopActivity::class.java).apply {
+                        putExtra("idShop", chartsList!!.get(position).id_shop)
+                    }
+                    mContext.startActivity(intent)
                 })
             }
         }

@@ -13,13 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
-            android:name=".ReviewShopActivity"
+            android:name=".ShopActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>
         <activity
+            android:name=".ReviewShopActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".PaymentActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProductDetailActivity"
             android:exported="true"

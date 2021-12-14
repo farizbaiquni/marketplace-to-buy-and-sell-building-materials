@@ -97,6 +97,12 @@ class ProductDetailActivity : AppCompatActivity() {
                     val modalBottomSheet = TypeReviewBottomSheetFragment(idShop)
                     modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
                 })
+
+                binding.productDetailShopLayout.setOnClickListener(View.OnClickListener {
+                    startActivity(Intent(this, ShopActivity::class.java).apply {
+                        putExtra("idShop", idShop)
+                    })
+                })
             }
         }
 

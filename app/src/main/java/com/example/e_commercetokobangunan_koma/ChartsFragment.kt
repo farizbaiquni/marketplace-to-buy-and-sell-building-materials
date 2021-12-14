@@ -25,17 +25,17 @@ class ChartsFragment(idUser: String) : Fragment(R.layout.charts_fragment) {
     private val binding get() = _binding!!
     private lateinit var viewModel: ChartsViewModel
     private lateinit var chartsAdapter: ChartsAdapter
+    val kategoriMenu = arrayListOf<String>("Kualitas Pengemasan", "Deskripsi dan Foto", "Fast Repone", "Keramahan")
     private var categories: MutableList<String> = mutableListOf<String>(
         "kualitas_pengemasan",
         "deskripsi_foto",
         "fast_respone",
         "keramahan", )
-    val languages = arrayListOf<String>("Kualitas Pengemasan", "Deskripsi dan Foto", "Fast Repone", "Keramahan")
 
 
     override fun onResume() {
         super.onResume()
-        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.item_drop_down_menu, languages)
+        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.item_drop_down_menu, kategoriMenu)
         binding.autoCompleteChartsCategory.setAdapter(arrayAdapter)
     }
 
@@ -57,7 +57,7 @@ class ChartsFragment(idUser: String) : Fragment(R.layout.charts_fragment) {
         binding.recyclerViewCharts.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCharts.adapter = chartsAdapter
 
-        binding.autoCompleteChartsCategory.setText(languages.get(0), false)
+        binding.autoCompleteChartsCategory.setText(kategoriMenu.get(0), false)
 
         viewModel.getKategori().observe(viewLifecycleOwner){ kategori ->
             if(!kategori.isNullOrEmpty()){
@@ -71,27 +71,27 @@ class ChartsFragment(idUser: String) : Fragment(R.layout.charts_fragment) {
         }
 
         binding.autoCompleteChartsCategory.setOnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
-            viewModel.setKetegori(categories[position])
+             viewModel.setKetegori(categories.get(position))
         }
-
-        getChartsList(viewModel.getKategori().value.toString())
 
     }
 
 
 
     fun getChartsList(kategori: String){
+        Toast.makeText(requireContext(), kategori, Toast.LENGTH_SHORT).show()
         var chartsModel: MutableList<ChartsModel> = mutableListOf()
+        var docsRef = Firebase.firestore.collection("review_shop").whereEqualTo("category", kategori)
 
-        Firebase.firestore.collection("review_shop")
-            .whereEqualTo("category", kategori)
-            .limit(10)
+        docsRef.orderBy("result", Query.Direction.DESCENDING)
+        docsRef.limit(10)
+        docsRef
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     chartsModel.add(
                         ChartsModel(
-                            document.id,
+                            document.data?.get("id_shop").toString(),
                             document.data?.get("shop_photo_url").toString(),
                             document.data?.get("shop_name").toString(),
                             document.data?.get("provinsi").toString(),

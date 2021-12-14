@@ -1,21 +1,32 @@
 package com.example.e_commercetokobangunan_koma
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProfileShopBinding
 import com.example.e_commercetokobangunan_koma.models.ShopModel
+import com.example.e_commercetokobangunan_koma.viewmodels.AddProfileShopViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.util.*
 
 class AddProfileShopActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityAddProfileShopBinding
+    private lateinit var viewModel: AddProfileShopViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +40,16 @@ class AddProfileShopActivity : AppCompatActivity() {
         //Action Bar Name
         getSupportActionBar()?.setTitle("Tambah Profil Toko")
 
+        //View Model
+        viewModel = AddProfileShopViewModel()
+
+        viewModel.getPhoto().observe(this){ photo ->
+            if(photo != null){
+                var bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, photo)
+                binding.profileImage.setImageBitmap(bitmap)
+            }
+        }
+
     }//End onCreate
 
 
@@ -39,6 +60,7 @@ class AddProfileShopActivity : AppCompatActivity() {
         if(currentUser != null) {
 
             binding.btnAddProfileShop.setOnClickListener(View.OnClickListener {
+                var photo: Uri = viewModel.getPhoto().value!!
                 var namaToko: String = binding.etNama.text.toString().trim()
                 var deskripsiToko: String = binding.etDeskripsi.text.toString().trim()
                 var provinsi: String = binding.etProvinsi.text.toString().trim()
@@ -47,22 +69,81 @@ class AddProfileShopActivity : AppCompatActivity() {
                 var kelurahanDesa: String = binding.etKelurahanDesa.text.toString().trim()
                 var alamatDetail: String = binding.etAlamatDetail.text.toString().trim()
 
-                if(validateForm(namaToko, deskripsiToko, provinsi, kabupatenKota, kecamatan, kelurahanDesa, alamatDetail)){
-                    addShopProfile(currentUser.uid, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                if(validateForm(photo, namaToko, deskripsiToko, provinsi, kabupatenKota, kecamatan, kelurahanDesa, alamatDetail)){
+                    uploadPhoto(photo, currentUser.uid, namaToko, deskripsiToko, provinsi, kabupatenKota,
                         kecamatan, kelurahanDesa, alamatDetail)
                 }
             })
+
+            val permissions = arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+            )
+
+            binding.profileImage.setOnClickListener(View.OnClickListener {
+                if(isAllPermissionsGranted(permissions.toList()).equals(false)){
+                    requestMultiplePermissionsLauncher.launch(permissions)
+                }else {
+                    var intent = Intent()
+                    intent.type = "image/*"
+                    intent.action = Intent.ACTION_GET_CONTENT
+                    resultLauncher.launch(intent)
+                }
+            })
+
         }else{
             startActivity(Intent(this, WelcomeActivity::class.java))
         }
     }// End onSTart
 
-    private fun validateForm(nama: String, deskripsiToko: String, provinsi: String, kabupatenKota: String,
+
+
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            var imageUri: Uri? = data?.data
+            if (imageUri != null) {
+                binding.errorSelectImageShop.visibility = View.GONE
+                viewModel.setPhoto(imageUri)
+            }
+        }
+    }
+
+
+
+
+    fun isAllPermissionsGranted(permissions: List<String>): Boolean{
+        for(permission in permissions){
+            if(ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED){
+                return false
+            }
+        }
+        return true
+    }
+
+
+
+
+    private val requestMultiplePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            // Handle Permission granted/rejected
+    }
+
+
+
+    private fun validateForm(photo: Uri?, nama: String, deskripsiToko: String, provinsi: String, kabupatenKota: String,
                              kecamatan: String, kelurahanDesa: String, alamatDetail: String): Boolean{
 
         if (nama.isBlank() || (nama.length < 3) || deskripsiToko.isBlank() || (deskripsiToko.length < 3)
             || provinsi.isBlank() || kabupatenKota.isBlank() || kecamatan.isBlank() ||
-            kelurahanDesa.isBlank() || alamatDetail.isBlank()) {
+            kelurahanDesa.isBlank() || alamatDetail.isBlank() || (photo == null)) {
+
+            if(photo == null){
+                binding.errorSelectImageShop.visibility = View.VISIBLE
+            }else{
+                binding.errorSelectImageShop.visibility = View.GONE
+            }
 
             if(nama.isBlank()){
                 binding.textFieldNama.error = "Input tidak boleh kosong"
@@ -117,11 +198,39 @@ class AddProfileShopActivity : AppCompatActivity() {
     }
 
 
-    private fun addShopProfile(idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
+
+    private fun uploadPhoto(photo: Uri, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
+                            kabupatenKota: String, kecamatan: String, kelurahanDesa: String,
+                            alamatDetail: String){
+        var fileName: UUID = UUID.randomUUID()
+        val ref = Firebase.storage.reference.child("product_photos/$fileName")
+        var uploadTask = ref.putFile(photo)
+
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            ref.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val url = task.result.toString()
+                addShopProfile(url, idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                    kecamatan, kelurahanDesa, alamatDetail)
+            } else {
+                addShopProfile("", idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                    kecamatan, kelurahanDesa, alamatDetail)
+            }
+        }
+    }
+
+
+    private fun addShopProfile(photoUrl: String, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
                                kabupatenKota: String, kecamatan: String, kelurahanDesa: String,
                                alamatDetail: String){
 
-        val docData = ShopModel(idUser, "", namaToko, deskripsiToko, Date(), provinsi, kabupatenKota,
+        val docData = ShopModel(idUser, photoUrl, namaToko, deskripsiToko, Date(), provinsi, kabupatenKota,
             kecamatan, kelurahanDesa, alamatDetail)
 
         Firebase.firestore.collection("shop")
@@ -135,5 +244,4 @@ class AddProfileShopActivity : AppCompatActivity() {
             }
     }
 
-
-}
+}// End Class

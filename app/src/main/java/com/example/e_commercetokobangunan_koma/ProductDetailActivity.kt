@@ -94,8 +94,12 @@ class ProductDetailActivity : AppCompatActivity() {
         viewModel.getIdShop().observe(this){ idShop ->
             if(!idShop.isNullOrEmpty()){
                 binding.btnReview.setOnClickListener(View.OnClickListener {
-                    val modalBottomSheet = TypeReviewBottomSheetFragment(idShop)
-                    modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
+                    if(auth.currentUser != null){
+                        val modalBottomSheet = TypeReviewBottomSheetFragment(idShop)
+                        modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
+                    }else{
+                        Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
+                    }
                 })
 
                 binding.productDetailShopLayout.setOnClickListener(View.OnClickListener {
@@ -109,10 +113,16 @@ class ProductDetailActivity : AppCompatActivity() {
 
         getShopInformation(idProduct, idUser)
         binding.btnBuy.setOnClickListener(View.OnClickListener {
-            if(viewModel.getProductDetail().value != null)
-                startActivity(Intent(this, PaymentActivity::class.java).apply {
-                    putExtra("id_product", viewModel.getProductDetail().value?.id_product)
-                })
+            if(auth.currentUser != null){
+                if(viewModel.getProductDetail().value != null) {
+                    startActivity(Intent(this, PaymentActivity::class.java).apply {
+                        putExtra("id_product", viewModel.getProductDetail().value?.id_product)
+                    })
+                }
+            }else{
+                Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
+            }
+
         })
 
 

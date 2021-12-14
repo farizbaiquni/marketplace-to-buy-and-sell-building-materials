@@ -67,17 +67,9 @@ class ShopActivity : AppCompatActivity() {
             }
         }
 
-    }
+        getShopInformation(idShop)
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if(currentUser == null){
-            startActivity(Intent(this, WelcomeActivity::class.java))
-        }else{
-            getShopInformation(idShop)
-        }
-    }
+    }// End onCreate
 
     fun getShopInformation(idShop: String){
         var alamat = ""

@@ -23,9 +23,21 @@
                 android:layout_width="140dp"
                 android:layout_height="140dp"
                 android:src="@drawable/add_student"
-                app:civ_border_width="2dp"
-                app:civ_border_color="#FF000000"
+                app:civ_border_width="1dp"
+                app:civ_border_color="#6c757d"
+                android:scaleType="centerCrop"
                 android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:id="@+id/error_select_image_shop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="*Harus memilih foto profil"
+                android:textColor="#a4161a"
+                android:textSize="13sp"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"

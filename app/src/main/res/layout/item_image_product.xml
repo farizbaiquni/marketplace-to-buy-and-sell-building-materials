@@ -22,10 +22,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="2dp"
             android:text="default foto"
             android:textColor="#2d6a4f"
-            android:layout_marginTop="2dp"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
     </LinearLayout>
 

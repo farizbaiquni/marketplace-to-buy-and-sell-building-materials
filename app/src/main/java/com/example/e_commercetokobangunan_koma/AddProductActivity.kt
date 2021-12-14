@@ -6,8 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +35,8 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddProductBinding
     private lateinit var adapterProduct: AddProductAdapter
     private lateinit var viewModel: AddProductViewModel
+    private lateinit var builderLoadingDialog: AlertDialog.Builder
+    private lateinit var loadingDialog: AlertDialog
 
     private var REQUEST_CODE: Int = 100
 
@@ -46,6 +51,13 @@ class AddProductActivity : AppCompatActivity() {
 
         // Initialize Firebase Auth
         auth = Firebase.auth
+
+        //Laoding Dialog
+        builderLoadingDialog = AlertDialog.Builder(this)
+        var inflater: LayoutInflater = layoutInflater
+        builderLoadingDialog.setView(inflater.inflate(R.layout.loading_dialog, null))
+        builderLoadingDialog.setCancelable(false)
+        loadingDialog = builderLoadingDialog.create()
 
         //RecyclerView Adapter
         adapterProduct = AddProductAdapter(this)
@@ -76,7 +88,7 @@ class AddProductActivity : AppCompatActivity() {
             lateinit var nama: String
             lateinit var harga: String
             lateinit var deskripsi: String
-            lateinit var linkVideo: String
+            var linkVideo: String = ""
             lateinit var jumlahStok: String
             var kondisiBaru by Delegates.notNull<Boolean>()
             var kondisiBekas by Delegates.notNull<Boolean>()
@@ -230,8 +242,10 @@ class AddProductActivity : AppCompatActivity() {
 
 
 
-    fun addProduct(idUser: String, nama: String, harga: String, deskripsi: String, linkVideo: String, jumlahStok: String,
-                   berat: String, kondisiBaru: Boolean){
+    fun addProduct(idUser: String, nama: String, harga: String, deskripsi: String, linkVideo: String, berat: String,
+                   jumlahStok: String, kondisiBaru: Boolean){
+
+        loadingDialog.show()
 
         val data = AddProductModel(idUser, nama, harga.toLong(), deskripsi, linkVideo, jumlahStok.toLong(), berat.toDouble(),
         kondisiBaru)
@@ -243,6 +257,8 @@ class AddProductActivity : AppCompatActivity() {
                 viewModel.getSelectedPhotos().value?.let { uploadImages(it) }
             }
             .addOnFailureListener { e ->
+                Toast.makeText(this, "Gagal menambahkan produks", Toast.LENGTH_SHORT).show()
+                loadingDialog.dismiss()
             }
     }
 
@@ -250,9 +266,13 @@ class AddProductActivity : AppCompatActivity() {
 
     fun uploadImages(imagesUri: MutableList<Uri>){
         viewModel.setPhotosProductUrl(mutableListOf())
+        var uploadedImagesUrl: MutableList<String> = mutableListOf()
         var storageRef = Firebase.storage.reference
         val iterator = imagesUri.iterator()
         var fileName: UUID?
+
+        val totalImages = imagesUri.size
+        var index = 0
 
         while (iterator.hasNext()) {
             fileName = UUID.randomUUID()
@@ -260,23 +280,23 @@ class AddProductActivity : AppCompatActivity() {
             var uploadTask = ref.putFile(iterator.next())
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
-                    task.exception?.let {}
-                    if(!iterator.hasNext()){
-                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                    task.exception?.let {
+                        throw it
                     }
                 }
                 ref.downloadUrl
             }.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // val downloadUri = task.result
-                    viewModel.addPhotosProductUrl(task.result.toString())
-                    if(!iterator.hasNext()){
-                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                    uploadedImagesUrl.add(task.result.toString())
+                    index++
+                    if(index.equals(totalImages)){
+                        addPhotoProductUrl(uploadedImagesUrl)
                     }
                 } else {
                     // Handle failures
-                    if(!iterator.hasNext()){
-                        viewModel.getPhotosProductUrl().value?.let { addPhotoProductUrl(it) }
+                    index++
+                    if(index.equals(totalImages)){
+                        addPhotoProductUrl(uploadedImagesUrl)
                     }
                 }
             }
@@ -288,26 +308,42 @@ class AddProductActivity : AppCompatActivity() {
     fun addPhotoProductUrl(photosUrl: MutableList<String>){
 
         val productRef = Firebase.firestore.collection("product").document(viewModel.getIdProduct().value.toString())
+        var productPhotosRef = viewModel.getIdProduct().value?.let {
+            Firebase.firestore.collection("product").document(it).collection("photos").document()
+        }
+
+        // Update Default Photo
         productRef.update("default_photo", photosUrl[0])
 
-        val iterator = photosUrl.iterator()
-        while (iterator.hasNext()) {
-            // Add a new document with a generated id.
-            val data = hashMapOf(
-                "photo_url" to iterator.next(),
-            )
-            viewModel.getIdProduct().value?.let {
-                Firebase.firestore.collection("product").document(it).collection("photos")
-                    .add(data)
-                    .addOnSuccessListener { documentReference ->
-                        startActivity(Intent(this, ShopProductListActivity::class.java))
-                    }
-                    .addOnFailureListener { e ->
-                        startActivity(Intent(this, ShopProductListActivity::class.java))
-                    }
+        // Add url photo
+        Firebase.firestore.runBatch { batch ->
+
+            val iterator = photosUrl.iterator()
+            while (iterator.hasNext()) {
+
+                val data = hashMapOf(
+                    "photo_url" to iterator.next(),
+                )
+
+                if (productPhotosRef != null) {
+                    batch.set(productPhotosRef!!, data)
+                }
+
+                productPhotosRef = viewModel.getIdProduct().value?.let {
+                    Firebase.firestore.collection("product").document(it).collection("photos").document()
+                }
             }
+        }.addOnSuccessListener {
+            Toast.makeText(this, "Produk Berhaasil ditambahkan", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
+            startActivity(Intent(this, ShopProductListActivity::class.java))
+        }.addOnFailureListener {
+            Toast.makeText(this, "Produk gagal ditambahkan", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
+            startActivity(Intent(this, ShopProductListActivity::class.java))
         }
     }
+
 
 
 } // End class

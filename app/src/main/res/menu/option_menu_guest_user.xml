@@ -8,13 +8,8 @@
         android:title="Toko"/>
 
     <item
-        android:id="@+id/menu_buyer_profil"
+        android:id="@+id/menu_buyer_login"
         app:showAsAction="never|withText"
-        android:title="Profil"/>
-
-    <item
-        android:id="@+id/menu_buyer_logout"
-        app:showAsAction="never|withText"
-        android:title="Logout"/>
+        android:title="Login"/>
 
 </menu>

@@ -74,7 +74,7 @@ class ShopProductListActivity : AppCompatActivity() {
                         binding.recyclerViewShopProductList.layoutManager = gridLayoutManager
                         binding.recyclerViewShopProductList.adapter = adapterProductList
 
-                        getProductShopList()
+                        getProductShopList(currentUser.uid)
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -113,16 +113,20 @@ class ShopProductListActivity : AppCompatActivity() {
     }
 
 
-    private fun getProductShopList(){
+    private fun getProductShopList(idUser: String){
         var product: ShopProductListModel = ShopProductListModel()
         var productList: MutableList<ShopProductListModel> = mutableListOf()
 
-        Firebase.firestore.collection("product").limit(10)
+        Firebase.firestore.collection("product").whereEqualTo("id_user", idUser) .limit(10)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    product = ShopProductListModel(document.data.get("name").toString(),
-                        0, document.getLong("stock"), true)
+                    product = ShopProductListModel(
+                        document.data.get("default_photo").toString(),
+                        document.data.get("name").toString(),
+                        0,
+                        document.getLong("stock"),
+                        true)
                     productList.add(product)
                 }
                 model.setProductShop(productList)

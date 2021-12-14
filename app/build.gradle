@@ -70,4 +70,7 @@ dependencies {
     //Images Slider
     implementation 'com.github.smarteist:autoimageslider:1.4.0'
 
+    //Gif Image View
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.23'
+
 }

@@ -106,23 +106,17 @@ class ProductDetailActivity : AppCompatActivity() {
             }
         }
 
-    }// End onCreate
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if(currentUser == null){
-            startActivity(Intent(this, WelcomeActivity::class.java))
-        } else {
-            getShopInformation(idProduct, idUser)
-            binding.btnBuy.setOnClickListener(View.OnClickListener {
-                if(viewModel.getProductDetail().value != null)
-                    startActivity(Intent(this, PaymentActivity::class.java).apply {
-                        putExtra("id_product", viewModel.getProductDetail().value?.id_product)
-                    })
-            })
-        }
-    }// End onStart
+        getShopInformation(idProduct, idUser)
+        binding.btnBuy.setOnClickListener(View.OnClickListener {
+            if(viewModel.getProductDetail().value != null)
+                startActivity(Intent(this, PaymentActivity::class.java).apply {
+                    putExtra("id_product", viewModel.getProductDetail().value?.id_product)
+                })
+        })
+
+
+    }// End onCreate
 
 
     fun getShopInformation(idProduct: String, idUser: String){

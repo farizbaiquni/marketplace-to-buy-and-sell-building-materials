@@ -42,10 +42,26 @@ class ShopActivity : AppCompatActivity() {
             if(!reviewShop.isNullOrEmpty()){
                 for(review in reviewShop){
                     when(review.key){
-                        "kualitas_pengemasan" -> binding.badgeKualitasPengemasan.visibility = View.VISIBLE
-                        "deskripsi_foto" -> binding.badgeDeskripsiFoto.visibility = View.VISIBLE
-                        "fast_respone" -> binding.badgeFastRespone.visibility = View.VISIBLE
-                        "keramahan" -> binding.badgeKeramahan.visibility = View.VISIBLE
+                        "kualitas_pengemasan" -> {
+                            if(review.value.result!!.toDouble() > 4.3){
+                                binding.badgeKualitasPengemasan.visibility = View.VISIBLE
+                            }
+                        }
+                        "deskripsi_foto" -> {
+                            if(review.value.result!!.toDouble() > 4.3){
+                                binding.badgeDeskripsiFoto.visibility = View.VISIBLE
+                            }
+                        }
+                        "fast_respone" -> {
+                            if(review.value.result!!.toDouble() > 4.3){
+                                binding.badgeFastRespone.visibility = View.VISIBLE
+                            }
+                        }
+                        "keramahan" -> {
+                            if(review.value.result!!.toDouble() > 4.3){
+                                binding.badgeKeramahan.visibility = View.VISIBLE
+                            }
+                        }
                     }
                 }
             }
@@ -95,7 +111,6 @@ class ShopActivity : AppCompatActivity() {
     fun getShopReview(idShop: String){
         var reviewShop: MutableMap<String, ReviewShopModel> = mutableMapOf()
         var docsRef = Firebase.firestore.collection("review_shop").whereEqualTo("id_shop", idShop)
-            docsRef.whereGreaterThan("result", 4)
             docsRef.get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {

@@ -18,9 +18,8 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class ChartsFragment(idUser: String) : Fragment(R.layout.charts_fragment) {
+class ChartsFragment() : Fragment(R.layout.charts_fragment) {
 
-    private var idUser: String = idUser
     private var _binding: ChartsFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: ChartsViewModel
@@ -79,10 +78,8 @@ class ChartsFragment(idUser: String) : Fragment(R.layout.charts_fragment) {
 
 
     fun getChartsList(kategori: String){
-        Toast.makeText(requireContext(), kategori, Toast.LENGTH_SHORT).show()
         var chartsModel: MutableList<ChartsModel> = mutableListOf()
         var docsRef = Firebase.firestore.collection("review_shop").whereEqualTo("category", kategori)
-
         docsRef.orderBy("result", Query.Direction.DESCENDING)
         docsRef.limit(10)
         docsRef

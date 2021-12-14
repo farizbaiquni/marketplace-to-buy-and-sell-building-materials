@@ -23,7 +23,6 @@
         android:id="@+id/bottom_navigation_main_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#dee2e6"
         app:menu="@menu/bottom_navigation_main_activity" />
 
 </LinearLayout>

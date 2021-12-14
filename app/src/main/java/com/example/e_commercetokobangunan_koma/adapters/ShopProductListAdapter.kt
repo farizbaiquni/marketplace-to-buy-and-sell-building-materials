@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.e_commercetokobangunan_koma.R
 import com.example.e_commercetokobangunan_koma.models.ShopProductListModel
+import com.squareup.picasso.Picasso
+import java.io.IOException
 
 class ShopProductListAdapter (private val mContext: Context)
     : RecyclerView.Adapter<ShopProductListAdapter.ViewHolder>() {
@@ -46,6 +48,9 @@ class ShopProductListAdapter (private val mContext: Context)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if(products != null){
             if(products?.get(position) != null ){
+                    try {
+                        Picasso.get().load(products!!.get(position).photo_url).resize(100, 100).centerCrop().into(holder.imageProduct)
+                    }catch (e: IOException){}
                     holder.name.text = products!!.get(position).name
                     holder.stock.text = products!!.get(position).jumlahStok.toString()
                     holder.sold.text = products!!.get(position).sold.toString()

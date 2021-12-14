@@ -30,6 +30,7 @@
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/item_shop_charts.xml" value="0.264" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/item_shop_product_list.xml" value="0.4" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/loading_alert_dialog.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/loading_dialog.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/shimmer_product_detail.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/shimmer_product_list.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/layout/shimmer_review_shop.xml" value="0.25416666666666665" />
@@ -38,6 +39,7 @@
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/menu/option_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/menu/option_menu_add_product.xml" value="0.2" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/menu/option_menu_buyer.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/menu/option_menu_guest_user.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Fariz Baiquni/AndroidStudioProjects/ECommerceTokoBangunanKOMA/app/src/main/res/menu/option_menu_seller.xml" value="0.25416666666666665" />
       </map>
     </option>

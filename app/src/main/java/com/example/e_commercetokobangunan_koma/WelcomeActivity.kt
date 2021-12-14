@@ -21,6 +21,9 @@ class WelcomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        // Action Bar
+        supportActionBar?.title = "Selamat Datang"
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 

@@ -33,42 +33,31 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        //Bottom Navigation
+        val exploreFragment = ExploreFragment()
+        val chartsFragment = ChartsFragment()
+
+        setCurrentFragment(exploreFragment)
+
+        binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
+            when(it.itemId){
+                R.id.bottom_navigation_explore -> {
+                    //Action Bar
+                    getSupportActionBar()?.setTitle("Explore")
+                    setCurrentFragment(exploreFragment)
+                }
+                R.id.bottom_navigation_chats -> {
+                    //Action Bar
+                    getSupportActionBar()?.setTitle("Top Charts")
+                    setCurrentFragment(chartsFragment)
+                }
+            }
+            true
+        }
+
 
     }// End onCreate
 
-
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if(currentUser == null){
-            intentActivity = Intent(this, WelcomeActivity::class.java)
-            startActivity(intentActivity)
-        }else{
-
-            //Bottom Navigation
-            val exploreFragment = ExploreFragment()
-            val chartsFragment = ChartsFragment(currentUser.uid)
-
-            setCurrentFragment(exploreFragment)
-
-            binding.bottomNavigationMainActivity.setOnItemSelectedListener { it ->
-                when(it.itemId){
-                    R.id.bottom_navigation_explore -> {
-                        //Action Bar
-                        getSupportActionBar()?.setTitle("Explore")
-                        setCurrentFragment(exploreFragment)
-                    }
-                    R.id.bottom_navigation_chats -> {
-                        //Action Bar
-                        getSupportActionBar()?.setTitle("Top Charts")
-                        setCurrentFragment(chartsFragment)
-                    }
-                }
-                true
-            }
-        }
-    } // End onStart
 
 
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
@@ -77,8 +66,15 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.option_menu_buyer, menu)
+
+        if(auth.currentUser != null){
+            inflater.inflate(R.menu.option_menu_buyer, menu)
+        }else{
+            inflater.inflate(R.menu.option_menu_guest_user, menu)
+        }
+
         return true
     }
 
@@ -86,12 +82,24 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_buyer_toko -> {
-                startActivity(Intent(this, ShopProductListActivity::class.java))
-                // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
+                if(auth.currentUser == null){
+                    Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
+                }else{
+                    startActivity(Intent(this, ShopProductListActivity::class.java))
+                }
                 true
             }
             R.id.menu_buyer_profil -> {
                 Toast.makeText(this, "PROFILE", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.menu_buyer_logout -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this, MainActivity::class.java))
+                true
+            }
+            R.id.menu_buyer_login -> {
+                startActivity(Intent(this, WelcomeActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

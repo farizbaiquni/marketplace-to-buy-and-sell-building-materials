@@ -8,7 +8,9 @@
     android:layout_height="wrap_content"
     app:strokeColor="#ced4da"
     app:strokeWidth="2dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    android:layout_margin="3dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"

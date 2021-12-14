@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ShopProductListActivity"
     android:orientation="vertical"
-    android:background="#f8f9fa">
+    android:background="#ced4da">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_shop_product_list"

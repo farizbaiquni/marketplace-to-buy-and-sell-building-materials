@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Platform E-Commerce untuk Penjualan Material Toko Bangunan "
+            android:text="Sebuah Platform untuk Jual-Beli Material Toko Bangunan "
             android:textSize="17sp"
             android:layout_marginTop="10dp"/>
 

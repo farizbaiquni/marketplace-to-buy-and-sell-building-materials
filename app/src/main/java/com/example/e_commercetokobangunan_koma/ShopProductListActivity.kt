@@ -36,6 +36,9 @@ class ShopProductListActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        //Action Bar Name
+        getSupportActionBar()?.setTitle("Produk Toko")
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -49,9 +52,6 @@ class ShopProductListActivity : AppCompatActivity() {
                 adapterProductList.setProducts(products)
             }
         }
-
-        //Action Bar Name
-        getSupportActionBar()?.setTitle("Produk Toko")
 
     }
 
@@ -122,6 +122,7 @@ class ShopProductListActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 for (document in result) {
                     product = ShopProductListModel(
+                        document.id,
                         document.data.get("default_photo").toString(),
                         document.data.get("name").toString(),
                         0,

@@ -10,14 +10,14 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="30dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="30dp">
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="30dp">
 
             <pl.droidsonroids.gif.GifImageView
                 android:layout_width="300dp"
@@ -33,7 +33,8 @@
                 android:text="Sedang memproses..."
                 android:layout_gravity="center_horizontal"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"/>
 
         </LinearLayout>
 

@@ -97,6 +97,7 @@ class ChartsFragment() : Fragment(R.layout.charts_fragment) {
                         )
                     )
                 }
+                chartsModel.sortByDescending { it.nilai_ulasan }
                 viewModel.setChartsList(chartsModel)
             }
             .addOnFailureListener { exception ->

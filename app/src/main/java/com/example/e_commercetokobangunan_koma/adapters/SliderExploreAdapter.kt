@@ -33,7 +33,7 @@ class SliderExploreAdapter(): SliderViewAdapter<SliderExploreAdapter.SliderViewH
     override fun onBindViewHolder(viewHolder: SliderViewHolder, position: Int) {
         if(photosUrl != null){
             if(photosUrl?.get(position) != null){
-                Picasso.get().load(photosUrl?.get(position)).centerCrop().resize(300, 300).into(viewHolder.imageView)
+                Picasso.get().load(photosUrl?.get(position)).centerCrop().resize(700, 700).into(viewHolder.imageView)
             }
         }
     }

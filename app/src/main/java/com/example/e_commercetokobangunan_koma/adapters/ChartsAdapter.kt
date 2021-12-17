@@ -60,10 +60,8 @@ class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder
             if(chartsList?.get(position) != null){
                 holder.index.text = ( position + 1).toString()
                 try {
-                    Picasso.get().load(chartsList!!.get(position).foto).centerCrop().into(holder.foto);
-                }catch(e: Exception){
-
-                }
+                    Picasso.get().load(chartsList!!.get(position).foto).resize(700, 700).centerCrop().into(holder.foto)
+                }catch(e: Exception){ }
                 holder.nama.text =  chartsList!!.get(position).nama
                 holder.provinsi.text =  chartsList!!.get(position).provinsi
                 holder.nilaiUlasan.text =  chartsList!!.get(position).nilai_ulasan

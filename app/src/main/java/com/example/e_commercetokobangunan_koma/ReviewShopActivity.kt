@@ -143,7 +143,7 @@ class ReviewShopActivity : AppCompatActivity() {
                 }
 
                 shopProfile?.let { viewModel.setSimpleShopProfile(it) }
-                checkPermittedReview(idUser)
+                checkPermittedReview(idUser, idShop)
 
             }
             .addOnFailureListener { exception ->
@@ -155,24 +155,27 @@ class ReviewShopActivity : AppCompatActivity() {
     }
 
 
-    private fun checkPermittedReview(idUser: String){
+    private fun checkPermittedReview(idUser: String, idShop: String){
         var permittedReview: MutableList<String> = mutableListOf()
 
         //Check permitted for history transaction
-        db.collection("transaction")
-            .whereEqualTo("id_buyer", idUser)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { result ->
+        var ref = db.collection("transaction").whereEqualTo("id_buyer", idUser)
+            ref = ref.whereEqualTo("id_shop", idShop)
+            ref.limit(1).get().addOnSuccessListener { result ->
                 if(!result.isEmpty){
                     permittedReview.add("permitted_kualitas_pengemasan")
                     permittedReview.add("permitted_deskripsi_foto")
                     permittedReview.add("permitted_fast_respone")
                     permittedReview.add("permitted_keramahan")
                     viewModel.setPermittedReview(permittedReview)
+                }else{
+                    permittedReview.add("permitted_fast_respone")
+                    permittedReview.add("permitted_keramahan")
+                    viewModel.setPermittedReview(permittedReview)
                 }
             }
             .addOnFailureListener { exception ->
+
                 binding.reviewShopLayout.visibility = View.VISIBLE
                 binding.shimmerReviewShop.stopShimmer()
                 binding.shimmerReviewShop.visibility = View.GONE

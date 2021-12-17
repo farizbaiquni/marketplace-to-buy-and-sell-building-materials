@@ -6,8 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.e_commercetokobangunan_koma.BottomSheetActionProductFragment
 import com.example.e_commercetokobangunan_koma.R
+import com.example.e_commercetokobangunan_koma.TypeReviewBottomSheetFragment
 import com.example.e_commercetokobangunan_koma.models.ShopProductListModel
 import com.squareup.picasso.Picasso
 import java.io.IOException
@@ -23,6 +27,7 @@ class ShopProductListAdapter (private val mContext: Context)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val cardView: CardView
         val imageProduct: ImageView
         val name: TextView
         val stock: TextView
@@ -30,6 +35,7 @@ class ShopProductListAdapter (private val mContext: Context)
         val productStatus: TextView
 
         init {
+            cardView = view.findViewById(R.id.shop_product_card_view)
             imageProduct = view.findViewById(R.id.shop_product_image)
             name = view.findViewById(R.id.shop_product_name)
             stock = view.findViewById(R.id.shop_product_stock)
@@ -49,7 +55,7 @@ class ShopProductListAdapter (private val mContext: Context)
         if(products != null){
             if(products?.get(position) != null ){
                     try {
-                        Picasso.get().load(products!!.get(position).photo_url).resize(100, 100).centerCrop().into(holder.imageProduct)
+                        Picasso.get().load(products!!.get(position).photo_url).resize(700, 700).centerCrop().into(holder.imageProduct)
                     }catch (e: IOException){}
                     holder.name.text = products!!.get(position).name
                     holder.stock.text = products!!.get(position).jumlahStok.toString()
@@ -59,6 +65,11 @@ class ShopProductListAdapter (private val mContext: Context)
                     }else{
                         holder.productStatus.text = "Tidak Aktif"
                     }
+
+                holder.cardView.setOnClickListener(View.OnClickListener {
+                    val modalBottomSheet = BottomSheetActionProductFragment(products!!.get(position).idProduct.toString())
+                    modalBottomSheet.show((mContext as AppCompatActivity).supportFragmentManager.beginTransaction(), "Bottom Sheet")
+                })
             }
         }
     }

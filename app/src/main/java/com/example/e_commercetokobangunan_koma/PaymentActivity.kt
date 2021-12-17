@@ -17,6 +17,7 @@ class PaymentActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityPaymentBinding
     private lateinit var idProduct: String
+    private lateinit var idShop: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +29,9 @@ class PaymentActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         val bundle: Bundle? = intent.extras
-        idProduct = bundle?.get("idUser").toString()
+        idProduct = bundle?.get("idProduct").toString()
+        idShop = bundle?.get("idShop").toString()
+
     }
 
 
@@ -39,14 +42,14 @@ class PaymentActivity : AppCompatActivity() {
             startActivity(Intent(this, WelcomeActivity::class.java))
         }else{
             binding.btnBuy.setOnClickListener(View.OnClickListener {
-                postTransaction(currentUser.uid, idProduct)
+                postTransaction(currentUser.uid, idProduct, idShop)
             })
         }
     }
 
 
-    fun postTransaction(idBuyer: String, idProduct: String){
-        var data: TransactionModel = TransactionModel(idBuyer, idProduct, "Baiquni", Date(), 2,
+    fun postTransaction(idBuyer: String, idProduct: String, idShop: String){
+        var data: TransactionModel = TransactionModel(idBuyer, idProduct, idShop, "Baiquni", Date(), 2,
             20000, 20000, 40000, "Jawa Tengah", "Kendal",
             "Kendal", "Karangsari", "Rt.4 Rw.3")
 

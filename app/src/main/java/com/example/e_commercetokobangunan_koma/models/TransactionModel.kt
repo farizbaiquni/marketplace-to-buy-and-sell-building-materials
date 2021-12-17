@@ -5,6 +5,7 @@ import java.util.*
 data class TransactionModel(
     val id_buyer: String? = null,
     val id_product: String? = null,
+    val id_shop: String? = null,
     val buyer_name: String? = null,
     val date: Date? = null,
     val total_unit_product: Int? = null,

@@ -9,9 +9,11 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProfileShopBinding
 import com.example.e_commercetokobangunan_koma.models.ShopModel
@@ -27,6 +29,8 @@ class AddProfileShopActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityAddProfileShopBinding
     private lateinit var viewModel: AddProfileShopViewModel
+    private lateinit var builderLoadingDialog: AlertDialog.Builder
+    private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +46,13 @@ class AddProfileShopActivity : AppCompatActivity() {
 
         //View Model
         viewModel = AddProfileShopViewModel()
+
+        //Laoding Dialog
+        builderLoadingDialog = AlertDialog.Builder(this)
+        var inflater: LayoutInflater = layoutInflater
+        builderLoadingDialog.setView(inflater.inflate(R.layout.loading_dialog, null))
+        builderLoadingDialog.setCancelable(false)
+        loadingDialog = builderLoadingDialog.create()
 
         viewModel.getPhoto().observe(this){ photo ->
             if(photo != null){
@@ -60,7 +71,7 @@ class AddProfileShopActivity : AppCompatActivity() {
         if(currentUser != null) {
 
             binding.btnAddProfileShop.setOnClickListener(View.OnClickListener {
-                var photo: Uri = viewModel.getPhoto().value!!
+                var photo: Uri? = viewModel.getPhoto().value
                 var namaToko: String = binding.etNama.text.toString().trim()
                 var deskripsiToko: String = binding.etDeskripsi.text.toString().trim()
                 var provinsi: String = binding.etProvinsi.text.toString().trim()
@@ -199,28 +210,31 @@ class AddProfileShopActivity : AppCompatActivity() {
 
 
 
-    private fun uploadPhoto(photo: Uri, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
+    private fun uploadPhoto(photo: Uri?, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
                             kabupatenKota: String, kecamatan: String, kelurahanDesa: String,
                             alamatDetail: String){
+        loadingDialog.show()
         var fileName: UUID = UUID.randomUUID()
         val ref = Firebase.storage.reference.child("product_photos/$fileName")
-        var uploadTask = ref.putFile(photo)
+        var uploadTask = photo?.let { ref.putFile(it) }
 
-        uploadTask.continueWithTask { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
+        if (uploadTask != null) {
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
                 }
-            }
-            ref.downloadUrl
-        }.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val url = task.result.toString()
-                addShopProfile(url, idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
-                    kecamatan, kelurahanDesa, alamatDetail)
-            } else {
-                addShopProfile("", idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
-                    kecamatan, kelurahanDesa, alamatDetail)
+                ref.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val url = task.result.toString()
+                    addShopProfile(url, idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                        kecamatan, kelurahanDesa, alamatDetail)
+                } else {
+                    addShopProfile("", idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                        kecamatan, kelurahanDesa, alamatDetail)
+                }
             }
         }
     }
@@ -236,10 +250,12 @@ class AddProfileShopActivity : AppCompatActivity() {
         Firebase.firestore.collection("shop")
             .add(docData)
             .addOnSuccessListener { documentReference ->
+                loadingDialog.dismiss()
                 Toast.makeText(this, "Profil toko berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, ShopProductListActivity::class.java))
             }
             .addOnFailureListener { e ->
+                loadingDialog.dismiss()
                 Toast.makeText(this, "Gagal menambahkan profil toko", Toast.LENGTH_SHORT).show()
             }
     }

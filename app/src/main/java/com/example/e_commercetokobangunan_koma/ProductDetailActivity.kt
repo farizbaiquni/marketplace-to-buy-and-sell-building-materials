@@ -107,23 +107,25 @@ class ProductDetailActivity : AppCompatActivity() {
                         putExtra("idShop", idShop)
                     })
                 })
+
+                binding.btnBuy.setOnClickListener(View.OnClickListener {
+                    if(auth.currentUser != null){
+                        if(viewModel.getProductDetail().value != null) {
+                            startActivity(Intent(this, PaymentActivity::class.java).apply {
+                                putExtra("idProduct", viewModel.getProductDetail().value?.id_product)
+                                putExtra("idShop", idShop)
+                            })
+                        }
+                    }else{
+                        Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
+                    }
+                })
+
             }
         }
 
 
         getShopInformation(idProduct, idUser)
-        binding.btnBuy.setOnClickListener(View.OnClickListener {
-            if(auth.currentUser != null){
-                if(viewModel.getProductDetail().value != null) {
-                    startActivity(Intent(this, PaymentActivity::class.java).apply {
-                        putExtra("id_product", viewModel.getProductDetail().value?.id_product)
-                    })
-                }
-            }else{
-                Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
-            }
-
-        })
 
 
     }// End onCreate

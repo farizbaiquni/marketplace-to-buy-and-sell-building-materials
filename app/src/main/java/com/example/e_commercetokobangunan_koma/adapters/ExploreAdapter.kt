@@ -58,7 +58,7 @@ class ExploreAdapter (ctx: Context)
 
             if(products?.get(position) != null){
                 try {
-                    Picasso.get().load(products!!.get(position).defaultPhoto).resize(100, 100).centerCrop().into(holder.imageProduct)
+                    Picasso.get().load(products!!.get(position).defaultPhoto).resize(700, 700).centerCrop().into(holder.imageProduct)
                 }catch (e: IOException){}
 
                 holder.name.text =  products!!.get(position).name

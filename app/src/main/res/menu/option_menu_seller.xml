@@ -9,6 +9,12 @@
         android:title="Tambah Produk"/>
 
     <item
+        android:id="@+id/menu_seller_chat_list"
+        android:icon="@drawable/ic_baseline_message_24"
+        app:showAsAction="always"
+        android:title="Pesan"/>
+
+    <item
         android:id="@+id/menu_seller_profile_toko"
         app:showAsAction="never|withText"
         android:title="Profil Toko"/>

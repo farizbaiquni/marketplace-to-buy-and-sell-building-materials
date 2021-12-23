@@ -108,6 +108,11 @@ class ShopProductListActivity : AppCompatActivity() {
                 // Toast.makeText(this, "TOKO", Toast.LENGTH_SHORT).show()
                 true
             }
+            R.id.menu_seller_chat_list -> {
+                // startActivity(Intent(this, AddProductActivity::class.java))
+                Toast.makeText(this, "Profile Toko", Toast.LENGTH_SHORT).show()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

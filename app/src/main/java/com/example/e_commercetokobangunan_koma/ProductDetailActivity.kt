@@ -8,7 +8,6 @@ import android.widget.Toast
 import com.example.e_commercetokobangunan_koma.adapters.SliderExploreAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityProductDetailBinding
 import com.example.e_commercetokobangunan_koma.models.ProductDetailModel
-import com.example.e_commercetokobangunan_koma.models.SimpleShopProfileModel
 import com.example.e_commercetokobangunan_koma.viewmodels.ProductDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -91,11 +90,20 @@ class ProductDetailActivity : AppCompatActivity() {
         }
 
 
-        viewModel.getIdShop().observe(this){ idShop ->
-            if(!idShop.isNullOrEmpty()){
+        viewModel.getIdAndPhotoShop().observe(this){ list ->
+            if(!list.isNullOrEmpty()){
+
+                binding.btnChat.setOnClickListener(View.OnClickListener {
+                    startActivity(Intent(this, ChatActivity::class.java).apply {
+                        putExtra("idShop", list[0])
+                        putExtra("photoShop", list[1])
+                        putExtra("isBuyer", false)
+                    })
+                })
+
                 binding.btnReview.setOnClickListener(View.OnClickListener {
                     if(auth.currentUser != null){
-                        val modalBottomSheet = TypeReviewBottomSheetFragment(idShop)
+                        val modalBottomSheet = TypeReviewBottomSheetFragment(list[0])
                         modalBottomSheet.show(supportFragmentManager, TypeReviewBottomSheetFragment.TAG)
                     }else{
                         Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
@@ -104,7 +112,7 @@ class ProductDetailActivity : AppCompatActivity() {
 
                 binding.productDetailShopLayout.setOnClickListener(View.OnClickListener {
                     startActivity(Intent(this, ShopActivity::class.java).apply {
-                        putExtra("idShop", idShop)
+                        putExtra("idShop", list[0])
                     })
                 })
 
@@ -113,7 +121,7 @@ class ProductDetailActivity : AppCompatActivity() {
                         if(viewModel.getProductDetail().value != null) {
                             startActivity(Intent(this, PaymentActivity::class.java).apply {
                                 putExtra("idProduct", viewModel.getProductDetail().value?.id_product)
-                                putExtra("idShop", idShop)
+                                putExtra("idShop", list[0])
                             })
                         }
                     }else{
@@ -145,7 +153,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     binding.productDetailShopProvinsi.text = document.data.get("provinsi").toString()
 
                     getPhotosUrl(idProduct, document.data?.get("photo_url").toString(), document.data?.get("nama").toString())
-                    viewModel.setIdShop(document.id)
+                    viewModel.setIdAndPhotoShop(mutableListOf(document.id, document.data.get("photo_url").toString()))
                 }
             }
             .addOnFailureListener { exception ->

@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.example.e_commercetokobangunan_koma.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 
 class SignUpActivity : AppCompatActivity() {
@@ -16,6 +17,7 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private lateinit var binding: ActivitySignUpBinding
+    private lateinit var username: String
     private lateinit var email: String
     private lateinit var password: String
     private lateinit var confirmPassowrd: String
@@ -35,12 +37,13 @@ class SignUpActivity : AppCompatActivity() {
         })
 
         binding.btnCreateAccount.setOnClickListener(View.OnClickListener {
+            username = binding.etEmail.text.toString().trim()
             email = binding.etEmail.text.toString().trim()
             password = binding.etPassword.text.toString()
             confirmPassowrd = binding.etConfirmPassword.text.toString()
 
-            if(validateFormSignUp(email, password, confirmPassowrd)){
-                registrationAccount(email, password)
+            if(validateFormSignUp(username, email, password, confirmPassowrd)){
+                registrationAccount(username, email, password)
             }
         })
 
@@ -56,13 +59,25 @@ class SignUpActivity : AppCompatActivity() {
     } // End onStart
 
 
-    fun registrationAccount(email: String, password: String){
+    fun registrationAccount(username: String, email: String, password: String){
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign up success, update UI with the signed-in user's information
-                    Toast.makeText(this, "Akun berhasil dibuat", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
+
+                    val user = Firebase.auth.currentUser
+                    val profileUpdates = userProfileChangeRequest {
+                        displayName = username
+                    }
+                    user!!.updateProfile(profileUpdates)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(this, "Akun berhasil dibuat", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, MainActivity::class.java))
+                            }else{
+                                Toast.makeText(this, "Akun berhasil dibuat, username gagal disimpan", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, MainActivity::class.java))
+                            }
+                        }
                 } else {
                     // If sign up fails, display a message to the user.
                     Toast.makeText(this, "Gagal membuat akun", Toast.LENGTH_SHORT).show()
@@ -71,10 +86,18 @@ class SignUpActivity : AppCompatActivity() {
     } // End registrationAccount
 
 
-    fun validateFormSignUp(email: String, password: String, confirmPassword: String): Boolean{
+    fun validateFormSignUp(username: String, email: String, password: String, confirmPassword: String): Boolean{
 
-        if(email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches() || password.isBlank()
+        if(username.isBlank() || password.length <= 3 || email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches() || password.isBlank()
             || password.length <= 5 || !confirmPassword.equals(password)){
+
+            if(username.isBlank()){
+                binding.textFieldUsername.error = "Input tidak boleh kosong"
+            }else if(username.length <= 3){
+                binding.textFieldUsername.error = "Minimal username 3 karakter"
+            }else{
+                binding.textFieldUsername.error = null
+            }
 
             if(email.isBlank()){
                 binding.textFieldEmail.error = "Input tidak boleh kosong"

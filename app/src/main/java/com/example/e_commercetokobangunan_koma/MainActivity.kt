@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
@@ -59,6 +61,22 @@ class MainActivity : AppCompatActivity() {
     }// End onCreate
 
 
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            startActivity(Intent(this, WelcomeActivity::class.java))
+        }else{
+            Firebase.firestore.collection("users")
+                .whereEqualTo("id_user", currentUser.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if(documents.isEmpty){
+                        startActivity(Intent(this, AddProfileUserActivity::class.java))
+                    }
+                }
+        }
+    }//End onStart
 
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
             replace(R.id.frame_layout_main_activity, fragment)

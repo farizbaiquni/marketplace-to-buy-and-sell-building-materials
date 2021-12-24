@@ -15,26 +15,29 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProfileShopBinding
-import com.example.e_commercetokobangunan_koma.models.ShopModel
-import com.example.e_commercetokobangunan_koma.viewmodels.AddProfileShopViewModel
+import com.example.e_commercetokobangunan_koma.databinding.ActivityAddProfileUserBinding
+import com.example.e_commercetokobangunan_koma.models.AddProfileUserModel
+import com.example.e_commercetokobangunan_koma.viewmodels.AddProfileUserViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.util.*
 
-class AddProfileShopActivity : AppCompatActivity() {
+class AddProfileUserActivity : AppCompatActivity() {
+
     private lateinit var auth: FirebaseAuth
-    private lateinit var binding: ActivityAddProfileShopBinding
-    private lateinit var viewModel: AddProfileShopViewModel
+    private lateinit var binding: ActivityAddProfileUserBinding
+    private lateinit var viewModel: AddProfileUserViewModel
     private lateinit var builderLoadingDialog: AlertDialog.Builder
     private lateinit var loadingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddProfileShopBinding.inflate(layoutInflater)
+        binding = ActivityAddProfileUserBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -42,10 +45,7 @@ class AddProfileShopActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         //Action Bar Name
-        getSupportActionBar()?.setTitle("Tambah Profil Toko")
-
-        //View Model
-        viewModel = AddProfileShopViewModel()
+        supportActionBar?.title = "Profile User"
 
         //Laoding Dialog
         builderLoadingDialog = AlertDialog.Builder(this)
@@ -54,15 +54,15 @@ class AddProfileShopActivity : AppCompatActivity() {
         builderLoadingDialog.setCancelable(false)
         loadingDialog = builderLoadingDialog.create()
 
+        viewModel = AddProfileUserViewModel()
+
         viewModel.getPhoto().observe(this){ photo ->
             if(photo != null){
                 var bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, photo)
                 binding.profileImage.setImageBitmap(bitmap)
             }
         }
-
-    }//End onCreate
-
+    }
 
     override fun onStart() {
         super.onStart()
@@ -70,18 +70,17 @@ class AddProfileShopActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if(currentUser != null) {
 
-            binding.btnAddProfileShop.setOnClickListener(View.OnClickListener {
+            binding.btnAddProfileUser.setOnClickListener(View.OnClickListener {
                 var photo: Uri? = viewModel.getPhoto().value
-                var namaToko: String = binding.etNama.text.toString().trim()
-                var deskripsiToko: String = binding.etDeskripsi.text.toString().trim()
+                var username: String = binding.etUsername.text.toString().trim()
                 var provinsi: String = binding.etProvinsi.text.toString().trim()
                 var kabupatenKota: String = binding.etKabupatenKota.text.toString().trim()
                 var kecamatan: String = binding.etKecamatan.text.toString().trim()
                 var kelurahanDesa: String = binding.etKelurahanDesa.text.toString().trim()
                 var alamatDetail: String = binding.etAlamatDetail.text.toString().trim()
 
-                if(validateForm(photo, namaToko, deskripsiToko, provinsi, kabupatenKota, kecamatan, kelurahanDesa, alamatDetail)){
-                    uploadPhoto(photo, currentUser.uid, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                if(validateForm(photo, username, provinsi, kabupatenKota, kecamatan, kelurahanDesa, alamatDetail)){
+                    uploadPhoto(photo, currentUser.uid, username, provinsi, kabupatenKota,
                         kecamatan, kelurahanDesa, alamatDetail)
                 }
             })
@@ -108,47 +107,11 @@ class AddProfileShopActivity : AppCompatActivity() {
     }// End onSTart
 
 
-
-
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            var imageUri: Uri? = data?.data
-            if (imageUri != null) {
-                binding.errorSelectImageShop.visibility = View.GONE
-                viewModel.setPhoto(imageUri)
-            }
-        }
-    }
-
-
-
-
-    fun isAllPermissionsGranted(permissions: List<String>): Boolean{
-        for(permission in permissions){
-            if(ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED){
-                return false
-            }
-        }
-        return true
-    }
-
-
-
-
-    private val requestMultiplePermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            // Handle Permission granted/rejected
-    }
-
-
-
-    private fun validateForm(photo: Uri?, nama: String, deskripsiToko: String, provinsi: String, kabupatenKota: String,
+    private fun validateForm(photo: Uri?, username: String, provinsi: String, kabupatenKota: String,
                              kecamatan: String, kelurahanDesa: String, alamatDetail: String): Boolean{
 
-        if (nama.isBlank() || (nama.length < 3) || deskripsiToko.isBlank() || (deskripsiToko.length < 3)
-            || provinsi.isBlank() || kabupatenKota.isBlank() || kecamatan.isBlank() ||
-            kelurahanDesa.isBlank() || alamatDetail.isBlank() || (photo == null)) {
+        if (username.isBlank() || (username.length < 3) || provinsi.isBlank() || kabupatenKota.isBlank()
+            || kecamatan.isBlank() || kelurahanDesa.isBlank() || alamatDetail.isBlank() || (photo == null)) {
 
             if(photo == null){
                 binding.errorSelectImageShop.visibility = View.VISIBLE
@@ -156,20 +119,12 @@ class AddProfileShopActivity : AppCompatActivity() {
                 binding.errorSelectImageShop.visibility = View.GONE
             }
 
-            if(nama.isBlank()){
-                binding.textFieldNama.error = "Input tidak boleh kosong"
-            }else if(nama.length < 3){
-                binding.textFieldNama.error = "Minimal nama toko 3 karakter"
+            if(username.isBlank()){
+                binding.textFieldUsername.error = "Input tidak boleh kosong"
+            }else if(username.length < 3){
+                binding.textFieldUsername.error = "Minimal username 3 karakter"
             }else{
-                binding.textFieldNama.error = null
-            }
-
-            if(deskripsiToko.isBlank()){
-                binding.textFieldDeskripsi.error = "Input tidak boleh kosong"
-            }else if(deskripsiToko.length < 3){
-                binding.textFieldDeskripsi.error = "Minimal deskripsi toko 3 karakter"
-            }else{
-                binding.textFieldDeskripsi.error = null
+                binding.textFieldUsername.error = null
             }
 
             if(provinsi.isBlank()){
@@ -210,12 +165,39 @@ class AddProfileShopActivity : AppCompatActivity() {
 
 
 
-    private fun uploadPhoto(photo: Uri?, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
+    fun isAllPermissionsGranted(permissions: List<String>): Boolean{
+        for(permission in permissions){
+            if(ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED){
+                return false
+            }
+        }
+        return true
+    }
+
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            var imageUri: Uri? = data?.data
+            if (imageUri != null) {
+                binding.errorSelectImageShop.visibility = View.GONE
+                viewModel.setPhoto(imageUri)
+            }
+        }
+    }
+
+
+    private val requestMultiplePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        // Handle Permission granted/rejected
+    }
+
+    private fun uploadPhoto(photo: Uri?, idUser: String, username: String, provinsi: String,
                             kabupatenKota: String, kecamatan: String, kelurahanDesa: String,
                             alamatDetail: String){
         loadingDialog.show()
         var fileName: UUID = UUID.randomUUID()
-        val ref = Firebase.storage.reference.child("[shop_profile_photos/$fileName")
+        val ref = Firebase.storage.reference.child("user_profile_photos/$fileName")
         var uploadTask = photo?.let { ref.putFile(it) }
 
         if (uploadTask != null) {
@@ -229,35 +211,47 @@ class AddProfileShopActivity : AppCompatActivity() {
             }.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val url = task.result.toString()
-                    addShopProfile(url, idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                    addProfileUser(url, idUser, username, provinsi, kabupatenKota,
                         kecamatan, kelurahanDesa, alamatDetail)
                 } else {
-                    addShopProfile("", idUser, namaToko, deskripsiToko, provinsi, kabupatenKota,
+                    addProfileUser("", idUser, username, provinsi, kabupatenKota,
                         kecamatan, kelurahanDesa, alamatDetail)
                 }
             }
         }
     }
 
-
-    private fun addShopProfile(photoUrl: String, idUser: String, namaToko: String, deskripsiToko: String, provinsi: String,
+    private fun addProfileUser(photoUrl: String, idUser: String, username: String, provinsi: String,
                                kabupatenKota: String, kecamatan: String, kelurahanDesa: String,
                                alamatDetail: String){
 
-        val docData = ShopModel(idUser, photoUrl, namaToko, deskripsiToko, Date(), provinsi, kabupatenKota,
+        val docData = AddProfileUserModel(idUser, photoUrl, username, Timestamp.now().toDate(), provinsi, kabupatenKota,
             kecamatan, kelurahanDesa, alamatDetail)
 
-        Firebase.firestore.collection("shop")
-            .add(docData)
-            .addOnSuccessListener { documentReference ->
-                loadingDialog.dismiss()
-                Toast.makeText(this, "Profil toko berhasil ditambahkan", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, ShopProductListActivity::class.java))
+        val user = Firebase.auth.currentUser
+        val profileUpdates = userProfileChangeRequest {
+            displayName = username
+        }
+
+        user!!.updateProfile(profileUpdates)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Firebase.firestore.collection("users")
+                        .add(docData)
+                        .addOnSuccessListener { documentReference ->
+                            loadingDialog.dismiss()
+                            Toast.makeText(this, "Profil user berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java))
+                        }
+                        .addOnFailureListener { e ->
+                            loadingDialog.dismiss()
+                            Toast.makeText(this, "Gagal menambahkan profil user", Toast.LENGTH_SHORT).show()
+                        }
+                }else{
+                    Toast.makeText(this, "Gagal menambah data profile", Toast.LENGTH_SHORT).show()
+                }
             }
-            .addOnFailureListener { e ->
-                loadingDialog.dismiss()
-                Toast.makeText(this, "Gagal menambahkan profil toko", Toast.LENGTH_SHORT).show()
-            }
+
     }
 
-}// End Class
+}

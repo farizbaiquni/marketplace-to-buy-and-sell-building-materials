@@ -109,8 +109,9 @@ class ShopProductListActivity : AppCompatActivity() {
                 true
             }
             R.id.menu_seller_chat_list -> {
-                // startActivity(Intent(this, AddProductActivity::class.java))
-                Toast.makeText(this, "Profile Toko", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, ChatListActivity::class.java).apply {
+                    putExtra("isBuyer", false)
+                })
                 true
             }
             else -> super.onOptionsItemSelected(item)

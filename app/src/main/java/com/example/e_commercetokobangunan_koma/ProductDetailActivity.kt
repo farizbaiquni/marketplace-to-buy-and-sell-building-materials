@@ -97,6 +97,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     startActivity(Intent(this, ChatActivity::class.java).apply {
                         putExtra("idShop", list[0])
                         putExtra("photoShop", list[1])
+                        putExtra("nameShop", list[2])
                         putExtra("isBuyer", false)
                     })
                 })
@@ -153,7 +154,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     binding.productDetailShopProvinsi.text = document.data.get("provinsi").toString()
 
                     getPhotosUrl(idProduct, document.data?.get("photo_url").toString(), document.data?.get("nama").toString())
-                    viewModel.setIdAndPhotoShop(mutableListOf(document.id, document.data.get("photo_url").toString()))
+                    viewModel.setIdAndPhotoShop(mutableListOf(document.id, document.data.get("photo_url").toString(), document.data.get("nama").toString() ))
                 }
             }
             .addOnFailureListener { exception ->

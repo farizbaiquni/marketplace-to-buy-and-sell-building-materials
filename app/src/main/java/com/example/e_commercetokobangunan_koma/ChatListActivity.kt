@@ -3,6 +3,8 @@ package com.example.e_commercetokobangunan_koma
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.e_commercetokobangunan_koma.adapters.ChatListAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityChatListBinding
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.example.e_commercetokobangunan_koma.models.ChatListModel
@@ -19,7 +21,8 @@ class ChatListActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityChatListBinding
     private lateinit var viewModel: ChatListViewModel
-    private var isBuyer: Boolean = false
+    private lateinit var chatListAdapter: ChatListAdapter
+    private var isBuyer: Boolean? = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +39,27 @@ class ChatListActivity : AppCompatActivity() {
         val bundle: Bundle? = intent.extras
         isBuyer = bundle?.get("isBuyer") as Boolean
 
+
+        chatListAdapter = ChatListAdapter(this)
+        binding.recyclerViewChatList.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewChatList.adapter = chatListAdapter
+
         viewModel = ChatListViewModel()
 
+        viewModel.getIdShop().observe(this){ idShop ->
+            if(!idShop.isNullOrEmpty()){
+                getChatList(idShop)
+            }
+        }
+
+        viewModel.getChatList().observe(this){ chatList ->
+            if(!chatList.isEmpty()){
+                chatListAdapter.setChatList(chatList)
+            }
+        }
+
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -47,9 +68,10 @@ class ChatListActivity : AppCompatActivity() {
         if(currentUser == null){
             startActivity(Intent(this, WelcomeActivity::class.java))
         }else{
-
+            getIdShop(currentUser.uid)
         }
     }
+
 
     private fun getIdShop(idUser: String){
         Firebase.firestore.collection("shop")
@@ -58,7 +80,7 @@ class ChatListActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-
+                    viewModel.setIdShop(document.id)
                 }
             }
             .addOnFailureListener { exception -> }
@@ -66,7 +88,6 @@ class ChatListActivity : AppCompatActivity() {
 
 
     private fun getChatList(idSender: String){
-
         var chatList: MutableList<ChatListModel> = mutableListOf()
 
         Firebase.firestore.collection("rooms_chat")
@@ -79,16 +100,16 @@ class ChatListActivity : AppCompatActivity() {
                         document.id,
                         (document.data.get("id_users") as MutableList<*>).get(0).toString(),
                         (document.data.get("id_users") as MutableList<*>).get(1).toString(),
+                        (document.data.get("name_users") as MutableList<*>).get(0).toString(),
+                        (document.data.get("name_users") as MutableList<*>).get(1).toString(),
                         (document.data.get("photo_users") as MutableList<*>).get(1).toString(),
                         document.data.get("last_chat").toString(),
-                        document.data.get("last_chat_name").toString(),
                         (document.data.get("last_chat_date") as Timestamp).toDate(),
                     ))
+                    viewModel.setChatList(chatList)
                 }
             }
-            .addOnFailureListener { exception ->
-
-            }
+            .addOnFailureListener { exception -> }
     }
 
 }

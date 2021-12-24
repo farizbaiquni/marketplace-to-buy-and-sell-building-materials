@@ -26,6 +26,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var viewModel: ChatViewModel
     private lateinit var idShop: String
     private lateinit var photoShop: String
+    private lateinit var nameShop: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +41,7 @@ class ChatActivity : AppCompatActivity() {
         val bundle: Bundle? = intent.extras
         idShop = bundle?.get("idShop").toString()
         photoShop = bundle?.get("photoShop").toString()
+        nameShop = bundle?.get("nameShop").toString()
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -50,7 +52,7 @@ class ChatActivity : AppCompatActivity() {
             if(isFirst != null){
                 binding.sendMessage.setOnClickListener(View.OnClickListener {
                     sendMessage(idShop, auth.currentUser!!.uid, photoShop, "",
-                        binding.chatMessage.text.toString(), isFirst, viewModel.getIdRoom().value.toString())
+                        binding.chatMessage.text.toString(), isFirst, viewModel.getIdRoom().value.toString(), nameShop)
                 })
             }
         }
@@ -73,6 +75,14 @@ class ChatActivity : AppCompatActivity() {
         super.onStart()
         val currentUser = auth.currentUser
         if (currentUser != null) {
+            Firebase.firestore.collection("users")
+                .whereEqualTo("id_user", currentUser.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if(documents.isEmpty){
+                        startActivity(Intent(this, AddProfileUserActivity::class.java))
+                    }
+                }
             chatAdapter = ChatAdapter(currentUser.uid)
             binding.recyclerViewChat.layoutManager = LinearLayoutManager(this)
             binding.recyclerViewChat.adapter = chatAdapter
@@ -86,7 +96,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun getRoomChat(idShop: String, idUser: String){
         Firebase.firestore.collection("rooms_chat")
-            .whereArrayContainsAny("id_users", mutableListOf(idShop, idUser))
+            .whereEqualTo("id_users", mutableListOf(idShop, idUser))
             .limit(1)
             .get()
             .addOnSuccessListener { documents ->
@@ -95,6 +105,7 @@ class ChatActivity : AppCompatActivity() {
                 }
                 if(documents.isEmpty){
                     viewModel.setIsFirst(true)
+
                 }else{
                     viewModel.setIsFirst(false)
                 }
@@ -107,10 +118,8 @@ class ChatActivity : AppCompatActivity() {
 
     private fun getChats(idRoom: String){
         var messages: MutableList<ChatModel> = mutableListOf()
-        Firebase.firestore.collection("chats")
-            .whereEqualTo("id_room", idRoom)
-            .orderBy("date", Query.Direction.ASCENDING)
-            .addSnapshotListener { value, e ->
+        var chatsRef = Firebase.firestore.collection("chats").whereEqualTo("id_room", idRoom)
+            chatsRef.addSnapshotListener { value, e ->
                 if (e != null) {
                     return@addSnapshotListener
                 }
@@ -121,10 +130,11 @@ class ChatActivity : AppCompatActivity() {
                         doc.data.get("id_room").toString(),
                         doc.data.get("id_user").toString(),
                         doc.data.get("message").toString(),
-                        doc.data.get("date") as Timestamp?,
+                        (doc.data.get("date") as Timestamp).toDate(),
                     ))
                 }
 
+                messages.sortBy { it.date }
                 viewModel.setChats(messages)
 
             }
@@ -133,17 +143,19 @@ class ChatActivity : AppCompatActivity() {
 
 
     private fun sendMessage(idShop: String, idUser: String, photoShop: String, photoUser: String,
-                            message: String, isFirst: Boolean, idRoom: String){
+                            message: String, isFirst: Boolean, idRoom: String, nameShop: String){
 
         if(isFirst.equals(true)){
             val users = mutableListOf<String>(idShop, idUser)
             val photoUsers = mutableListOf<String>(photoShop, "")
+            val names = mutableListOf<String>(nameShop, auth.currentUser?.displayName.toString())
 
             val rooms = hashMapOf(
                 "id_users" to users,
                 "photo_users" to photoUsers,
+                "name_users" to names,
                 "last_chat" to "",
-                "last_chat_date" to Timestamp.now()
+                "last_chat_date" to Timestamp.now().toDate()
             )
 
             val roomRef = Firebase.firestore.collection("rooms_chat").document()
@@ -151,19 +163,19 @@ class ChatActivity : AppCompatActivity() {
 
             Firebase.firestore.runTransaction { transaction ->
                 transaction.set(roomRef, rooms)
-                transaction.set(chatRef, ChatModel(roomRef.id, idUser, message, Timestamp.now()))
+                transaction.set(chatRef, ChatModel(roomRef.id, idUser, message, Timestamp.now().toDate()))
                 transaction.update(roomRef, "last_chat", message)
 
             }.addOnSuccessListener { result ->
-                viewModel.setIsFirst(false)
-                Toast.makeText(this, "Chat berhasil dikirim", Toast.LENGTH_SHORT).show()
+                binding.chatMessage.setText("")
+                getRoomChat(idShop, idUser)
             }.addOnFailureListener { e ->
                 Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
             }
         
         }else{
 
-            var dateChat: Timestamp = Timestamp.now()
+            var dateChat: Date = Timestamp.now().toDate()
 
             val roomRef = Firebase.firestore.collection("rooms_chat").document(idRoom)
             val chatRef = Firebase.firestore.collection("chats").document()
@@ -174,7 +186,7 @@ class ChatActivity : AppCompatActivity() {
                 transaction.update(roomRef, "last_chat_date", dateChat)
 
             }.addOnSuccessListener { result ->
-                Toast.makeText(this, "Chat berhasil dikirim", Toast.LENGTH_SHORT).show()
+                binding.chatMessage.setText("")
             }.addOnFailureListener { e ->
                 Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
             }

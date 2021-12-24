@@ -65,7 +65,11 @@ class ChatListAdapter(context: Context): RecyclerView.Adapter<ViewHolder>() {
                 holder.date.text = date.format(chatList.get(position).date)
             }
             holder.card.setOnClickListener(View.OnClickListener {
-                mContext.startActivity(Intent(mContext, ShopProductListActivity::class.java))
+                mContext.startActivity(Intent(mContext, ChatFromSellerActivity::class.java).apply {
+                    putExtra("idRoom", chatList.get(position).id_room)
+                    putExtra("idShop", chatList.get(position).id_shop)
+                    putExtra("nameBuyer", chatList.get(position).name_buyer)
+                })
             })
         }
     }

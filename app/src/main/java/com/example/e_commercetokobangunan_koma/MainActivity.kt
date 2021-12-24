@@ -64,9 +64,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
-        if (currentUser == null) {
-            startActivity(Intent(this, WelcomeActivity::class.java))
-        }else{
+        if (currentUser != null) {
             Firebase.firestore.collection("users")
                 .whereEqualTo("id_user", currentUser.uid)
                 .get()

@@ -215,7 +215,7 @@ class AddProfileShopActivity : AppCompatActivity() {
                             alamatDetail: String){
         loadingDialog.show()
         var fileName: UUID = UUID.randomUUID()
-        val ref = Firebase.storage.reference.child("[shop_profile_photos/$fileName")
+        val ref = Firebase.storage.reference.child("shop_profile_photos/$fileName")
         var uploadTask = photo?.let { ref.putFile(it) }
 
         if (uploadTask != null) {

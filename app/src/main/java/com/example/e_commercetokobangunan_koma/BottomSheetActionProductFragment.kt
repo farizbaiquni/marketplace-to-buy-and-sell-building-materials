@@ -14,14 +14,13 @@ import android.widget.Toast
 import android.content.DialogInterface
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 
-class BottomSheetActionProductFragment(idProduct: String) : BottomSheetDialogFragment() {
+class BottomSheetActionProductFragment(var idProduct: String, var nameProduct: String, var photosName: MutableList<String>?) : BottomSheetDialogFragment() {
 
     private var _binding: FragmentBottomSheetActionProductBinding? = null
     private val binding get() = _binding!!
-
-    private val idProduct: String = idProduct
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +29,8 @@ class BottomSheetActionProductFragment(idProduct: String) : BottomSheetDialogFra
     ): View? {
         _binding = FragmentBottomSheetActionProductBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        binding.productName.text = this.nameProduct
 
         binding.btnEditProduct.setOnClickListener(View.OnClickListener {
             startActivity(Intent(requireContext(), UpdateProductActivity::class.java).apply {
@@ -44,6 +45,14 @@ class BottomSheetActionProductFragment(idProduct: String) : BottomSheetDialogFra
                 .setMessage("Apakah Anda yakin ingin menghapus produk tersebut")
                 .setPositiveButton("YA",
                     DialogInterface.OnClickListener { dialog, whichButton ->
+                        if(!this.photosName.isNullOrEmpty()){
+                            var iterator = this.photosName!!.iterator()
+                            while(iterator.hasNext()){
+                                val photoRef = Firebase.storage.reference.child("product_photos/${iterator.next()}")
+                                photoRef.delete()
+                            }
+                        }
+
                         Firebase.firestore.collection("product").document(idProduct)
                             .delete()
                             .addOnSuccessListener {

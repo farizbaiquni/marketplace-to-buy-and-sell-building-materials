@@ -64,6 +64,8 @@ class ProductDetailActivity : AppCompatActivity() {
                 val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
                 formatRupiah.maximumFractionDigits = 0
 
+                productDetail.photos?.let { sliderImagesAdapter.setPhotosUrl(it) }
+
                 binding.productDetailName.text = productDetail.name.toString()
                 binding.productDetailPrice.text = formatRupiah.format(productDetail.price.toString().toInt())
                 binding.productDetailDescription.text = productDetail.description.toString()
@@ -82,13 +84,6 @@ class ProductDetailActivity : AppCompatActivity() {
 
             }
         }
-
-        viewModel.getProductPhotosUrl().observe(this){ photosUrl ->
-            if(!photosUrl.isNullOrEmpty()){
-                sliderImagesAdapter.setPhotosUrl(photosUrl)
-            }
-        }
-
 
         viewModel.getIdAndPhotoShop().observe(this){ list ->
             if(!list.isNullOrEmpty()){
@@ -129,13 +124,10 @@ class ProductDetailActivity : AppCompatActivity() {
                         Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
                     }
                 })
-
             }
         }
 
-
         getShopInformation(idProduct, idUser)
-
 
     }// End onCreate
 
@@ -152,61 +144,44 @@ class ProductDetailActivity : AppCompatActivity() {
                     }catch (e: Exception){ }
                     binding.productDetailShopName.text = document.data.get("nama").toString()
                     binding.productDetailShopProvinsi.text = document.data.get("provinsi").toString()
-
-                    getPhotosUrl(idProduct, document.data?.get("photo_url").toString(), document.data?.get("nama").toString())
                     viewModel.setIdAndPhotoShop(mutableListOf(document.id, document.data.get("photo_url").toString(), document.data.get("nama").toString() ))
+                    getProduct(idProduct, document.data.get("photo_url").toString(), document.data.get("nama").toString())
                 }
             }
             .addOnFailureListener { exception ->
                 //Log.d(TAG, "Error getting documents: ", exception)
-                getPhotosUrl(idProduct, "", "")
             }
     }
 
-    fun getPhotosUrl(idProduct: String, shopPhoto: String, shopName: String){
-        var photosUrl: MutableList<String> = mutableListOf()
-        Firebase.firestore.collection("product").document(idProduct).collection("photos")
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    photosUrl.add(document.data?.get("photo_url").toString())
-                }
-                viewModel.setProductPhotosUrl(photosUrl)
-                getProduct(idProduct, shopPhoto, shopName)
-            }
-            .addOnFailureListener { exception ->
-                getProduct(idProduct, shopPhoto, shopName)
-            }
-    }
 
 
     fun getProduct(idProduct: String, shopPhoto: String, shopName: String){
-        var id_product = ""
-        var name = ""
-        var price: Long = 0
-        var description = ""
-        var stock: Long = 0
-        var weight: Double = 0.0
-        var condition = true
+        var id_product: String? = ""
+        var name: String? = ""
+        var price: Long? = 0
+        var description: String? = ""
+        var stock: Long? = 0
+        var weight: Double? = 0.0
+        var condition: Boolean? = true
+        var photos: MutableList<String>? = mutableListOf()
 
         var docRef = Firebase.firestore.collection("product").document(idProduct)
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    // Log.d(TAG, "DocumentSnapshot data: ${document.data}")
                     id_product = document.id
                     name = document.data?.get("name").toString()
-                    price = document.data?.get("price") as Long
+                    price = document.data?.get("price")?.let { it as Long }
                     description = document.data?.get("description").toString()
-                    stock = document.data?.get("stock") as Long
-                    weight = document.data?.get("weight") as Double
-                    condition = document.data?.get("new_condition") as Boolean
+                    stock = document.data?.get("stock")?.let { it as Long }
+                    weight = document.data?.get("weight")?.let { it as Double }
+                    condition = document.data?.get("new_condition")?.let { it as Boolean }
+                    photos = document.data?.get("photos")?.let { it as MutableList<String> }
 
-                    viewModel.setProductDetail(ProductDetailModel(id_product, name, price, description, stock, weight,
-                        condition, shopPhoto, shopName))
+                    viewModel.setProductDetail(ProductDetailModel(id_product, photos, name,
+                        price, description, stock, weight, condition, shopPhoto, shopName))
 
                 } else {
-                    // Log.d(TAG, "No such document")
                     binding.shimmerProductDetail.stopShimmer()
                     binding.productDetail.visibility = View.GONE
                     binding.standardBottomSheet.visibility = View.GONE
@@ -214,7 +189,6 @@ class ProductDetailActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { exception ->
-                // Log.d(TAG, "get failed with ", exception)
                 binding.shimmerProductDetail.stopShimmer()
                 binding.productDetail.visibility = View.GONE
                 binding.standardBottomSheet.visibility = View.GONE

@@ -169,11 +169,6 @@ class AddProductActivity : AppCompatActivity() {
 
 
     val requestMultiplePermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-//        permissions ->
-//            permissions.entries.forEach {
-//                Toast.makeText(this, "${it.key} = ${it.value}", Toast.LENGTH_SHORT).show()
-//                Log.e("DEBUG", "${it.key} = ${it.value}")
-//            }
     }
 
 
@@ -254,7 +249,7 @@ class AddProductActivity : AppCompatActivity() {
             .add(data)
             .addOnSuccessListener { documentReference ->
                 viewModel.setIdProduct(documentReference.id)
-                viewModel.getSelectedPhotos().value?.let { uploadImages(it) }
+                viewModel.getSelectedPhotos().value?.let { uploadImages(it, documentReference.id) }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Gagal menambahkan produks", Toast.LENGTH_SHORT).show()
@@ -264,9 +259,10 @@ class AddProductActivity : AppCompatActivity() {
 
 
 
-    fun uploadImages(imagesUri: MutableList<Uri>){
+    fun uploadImages(imagesUri: MutableList<Uri>, idProduct: String){
         viewModel.setPhotosProductUrl(mutableListOf())
         var uploadedImagesUrl: MutableList<String> = mutableListOf()
+        var uploadedImagesName: MutableList<String> = mutableListOf()
         var storageRef = Firebase.storage.reference
         val iterator = imagesUri.iterator()
         var fileName: UUID?
@@ -276,6 +272,7 @@ class AddProductActivity : AppCompatActivity() {
 
         while (iterator.hasNext()) {
             fileName = UUID.randomUUID()
+            uploadedImagesName.add(fileName.toString())
             val ref = storageRef.child("product_photos/$fileName")
             var uploadTask = ref.putFile(iterator.next())
             uploadTask.continueWithTask { task ->
@@ -290,13 +287,13 @@ class AddProductActivity : AppCompatActivity() {
                     uploadedImagesUrl.add(task.result.toString())
                     index++
                     if(index.equals(totalImages)){
-                        addPhotoProductUrl(uploadedImagesUrl)
+                        updatePhotoUrl(uploadedImagesUrl, uploadedImagesName, idProduct)
                     }
                 } else {
                     // Handle failures
                     index++
                     if(index.equals(totalImages)){
-                        addPhotoProductUrl(uploadedImagesUrl)
+                        updatePhotoUrl(uploadedImagesUrl, uploadedImagesName, idProduct)
                     }
                 }
             }
@@ -305,39 +302,20 @@ class AddProductActivity : AppCompatActivity() {
 
 
 
-    fun addPhotoProductUrl(photosUrl: MutableList<String>){
+    fun updatePhotoUrl(photosUrl: MutableList<String>, photosName: MutableList<String>, idProduct: String){
 
-        val productRef = Firebase.firestore.collection("product").document(viewModel.getIdProduct().value.toString())
-        var productPhotosRef = viewModel.getIdProduct().value?.let {
-            Firebase.firestore.collection("product").document(it).collection("photos").document()
-        }
+        val productRef = Firebase.firestore.collection("product").document(idProduct)
 
-        // Update Default Photo
-        productRef.update("default_photo", photosUrl[0])
-
-        // Add url photo
         Firebase.firestore.runBatch { batch ->
-
-            val iterator = photosUrl.iterator()
-            while (iterator.hasNext()) {
-
-                val data = hashMapOf(
-                    "photo_url" to iterator.next(),
-                )
-
-                if (productPhotosRef != null) {
-                    batch.set(productPhotosRef!!, data)
-                }
-
-                productPhotosRef = viewModel.getIdProduct().value?.let {
-                    Firebase.firestore.collection("product").document(it).collection("photos").document()
-                }
-            }
+            batch.update(productRef, "default_photo", photosUrl[0])
+            batch.update(productRef, "photos", photosUrl)
+            batch.update(productRef, "photos_name", photosName)
         }.addOnSuccessListener {
             Toast.makeText(this, "Produk Berhaasil ditambahkan", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             startActivity(Intent(this, ShopProductListActivity::class.java))
-        }.addOnFailureListener {
+        }
+        .addOnFailureListener {
             Toast.makeText(this, "Produk gagal ditambahkan", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             startActivity(Intent(this, ShopProductListActivity::class.java))

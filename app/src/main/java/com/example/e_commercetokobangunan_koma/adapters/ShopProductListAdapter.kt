@@ -60,14 +60,15 @@ class ShopProductListAdapter (private val mContext: Context)
                     holder.name.text = products!!.get(position).name
                     holder.stock.text = products!!.get(position).jumlahStok.toString()
                     holder.sold.text = products!!.get(position).sold.toString()
-                    if(products!!.get(position).statusProduk == true){
-                        holder.productStatus.text = "Aktif"
-                    }else{
-                        holder.productStatus.text = "Tidak Aktif"
-                    }
+//                    if(products!!.get(position).statusProduk == true){
+//                        holder.productStatus.text = "Aktif"
+//                    }else{
+//                        holder.productStatus.text = "Tidak Aktif"
+//                    }
 
                 holder.cardView.setOnClickListener(View.OnClickListener {
-                    val modalBottomSheet = BottomSheetActionProductFragment(products!!.get(position).idProduct.toString())
+                    val modalBottomSheet = BottomSheetActionProductFragment(products!!.get(position).idProduct.toString(),
+                        products!!.get(position).name.toString(), products!!.get(position).photos_name)
                     modalBottomSheet.show((mContext as AppCompatActivity).supportFragmentManager.beginTransaction(), "Bottom Sheet")
                 })
             }

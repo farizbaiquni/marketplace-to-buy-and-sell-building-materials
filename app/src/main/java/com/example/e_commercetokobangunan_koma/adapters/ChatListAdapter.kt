@@ -10,8 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.e_commercetokobangunan_koma.ChatFromSellerActivity
 import com.example.e_commercetokobangunan_koma.R
-import com.example.e_commercetokobangunan_koma.ShopProductListActivity
 import com.example.e_commercetokobangunan_koma.adapters.ChatListAdapter.ViewHolder
 import com.example.e_commercetokobangunan_koma.models.ChatListModel
 import java.text.DateFormat

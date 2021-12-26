@@ -3,6 +3,7 @@ package com.example.e_commercetokobangunan_koma
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.e_commercetokobangunan_koma.adapters.ChatListAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityChatListBinding
@@ -92,10 +93,13 @@ class ChatListActivity : AppCompatActivity() {
 
         Firebase.firestore.collection("rooms_chat")
             .whereArrayContains("id_users", idSender)
-            .get()
-            .addOnSuccessListener { documents ->
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+
                 chatList.clear()
-                for (document in documents) {
+                for (document in value!!) {
                     chatList.add(ChatListModel(
                         document.id,
                         (document.data.get("id_users") as MutableList<*>).get(0).toString(),
@@ -106,10 +110,9 @@ class ChatListActivity : AppCompatActivity() {
                         document.data.get("last_chat").toString(),
                         (document.data.get("last_chat_date") as Timestamp).toDate(),
                     ))
-                    viewModel.setChatList(chatList)
                 }
+                viewModel.setChatList(chatList)
             }
-            .addOnFailureListener { exception -> }
     }
 
 }

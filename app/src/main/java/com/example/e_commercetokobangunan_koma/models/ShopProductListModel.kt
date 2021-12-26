@@ -8,4 +8,5 @@ data class ShopProductListModel(
     val jumlahStok: Long? = null,
     @field:JvmField // use this annotation if your Boolean field is prefixed with 'is'
     val statusProduk: Boolean? = null,
+    val photos_name: MutableList<String>? = mutableListOf(),
 )

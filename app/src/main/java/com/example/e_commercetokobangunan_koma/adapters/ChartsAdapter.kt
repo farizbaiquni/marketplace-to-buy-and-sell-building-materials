@@ -16,6 +16,8 @@ import com.example.e_commercetokobangunan_koma.ShopActivity
 import com.example.e_commercetokobangunan_koma.models.ChartsModel
 import com.squareup.picasso.Picasso
 import java.lang.Exception
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder>() {
 
@@ -56,6 +58,8 @@ class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder
     }
 
     override fun onBindViewHolder(holder: ChartsAdapter.ViewHolder, position: Int) {
+        val df = DecimalFormat("#.#")
+        df.roundingMode = RoundingMode.FLOOR
         if(!chartsList.isNullOrEmpty()){
             if(chartsList?.get(position) != null){
                 holder.index.text = ( position + 1).toString()
@@ -64,7 +68,7 @@ class ChartsAdapter(ctx: Context): RecyclerView.Adapter<ChartsAdapter.ViewHolder
                 }catch(e: Exception){ }
                 holder.nama.text =  chartsList!!.get(position).nama
                 holder.provinsi.text =  chartsList!!.get(position).provinsi
-                holder.nilaiUlasan.text =  chartsList!!.get(position).nilai_ulasan
+                holder.nilaiUlasan.text =  df.format(chartsList!!.get(position).nilai_ulasan.toString().toDouble()).toString()
                 holder.jumlahUlasan.text =  chartsList!!.get(position).jumlah_ulasan + " ulasan"
                 holder.cardView.setOnClickListener(View.OnClickListener {
                     var intent: Intent = Intent(mContext, ShopActivity::class.java).apply {

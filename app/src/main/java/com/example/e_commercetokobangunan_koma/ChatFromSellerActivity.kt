@@ -1,4 +1,4 @@
-package com.example.e_commercetokobangunan_koma.adapters
+package com.example.e_commercetokobangunan_koma
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,15 +6,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.e_commercetokobangunan_koma.AddProfileUserActivity
-import com.example.e_commercetokobangunan_koma.R
-import com.example.e_commercetokobangunan_koma.WelcomeActivity
-import com.example.e_commercetokobangunan_koma.databinding.ActivityChatBinding
+import com.example.e_commercetokobangunan_koma.adapters.ChatFromSellerAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityChatFromSellerBinding
 import com.example.e_commercetokobangunan_koma.models.ChatFromSellerModel
 import com.example.e_commercetokobangunan_koma.models.ChatModel
 import com.example.e_commercetokobangunan_koma.viewmodels.ChatFromSellerViewModel
-import com.example.e_commercetokobangunan_koma.viewmodels.ChatViewModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -109,9 +105,8 @@ class ChatFromSellerActivity : AppCompatActivity() {
     }
 
     private fun sendMessage(idShop: String, message: String,  idRoom: String){
-
+        binding.sendMessage.isEnabled = false
         var dateChat: Date = Timestamp.now().toDate()
-
         val roomRef = Firebase.firestore.collection("rooms_chat").document(idRoom)
         val chatRef = Firebase.firestore.collection("chats").document()
 
@@ -122,8 +117,10 @@ class ChatFromSellerActivity : AppCompatActivity() {
 
         }.addOnSuccessListener { result ->
             binding.chatMessage.setText("")
+            binding.sendMessage.isEnabled = true
         }.addOnFailureListener { e ->
             Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
+            binding.sendMessage.isEnabled = true
         }
     }// End fun
 

@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
-            android:name=".adapters.ChatFromSellerActivity"
+            android:name=".ChatFromSellerActivity"
             android:exported="false" />
         <activity
             android:name=".AddProfileUserActivity"

@@ -20,10 +20,13 @@ tools:context=".BottomSheetActionProductFragment">
         android:paddingVertical="20dp">
 
         <TextView
+            android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nama Produk"
             android:textAlignment="center"
+            android:maxLines="1"
+            android:layout_marginHorizontal="15dp"
             android:textStyle="bold"/>
 
         <View

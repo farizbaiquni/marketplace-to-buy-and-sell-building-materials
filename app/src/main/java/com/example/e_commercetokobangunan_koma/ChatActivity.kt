@@ -145,6 +145,7 @@ class ChatActivity : AppCompatActivity() {
     private fun sendMessage(idShop: String, idUser: String, photoShop: String, photoUser: String,
                             message: String, isFirst: Boolean, idRoom: String, nameShop: String){
 
+        binding.sendMessage.isEnabled = false
         if(isFirst.equals(true)){
             val users = mutableListOf<String>(idShop, idUser)
             val photoUsers = mutableListOf<String>(photoShop, "")
@@ -169,14 +170,14 @@ class ChatActivity : AppCompatActivity() {
             }.addOnSuccessListener { result ->
                 binding.chatMessage.setText("")
                 getRoomChat(idShop, idUser)
+                binding.sendMessage.isEnabled = true
             }.addOnFailureListener { e ->
                 Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
+                binding.sendMessage.isEnabled = true
             }
         
         }else{
-
             var dateChat: Date = Timestamp.now().toDate()
-
             val roomRef = Firebase.firestore.collection("rooms_chat").document(idRoom)
             val chatRef = Firebase.firestore.collection("chats").document()
 
@@ -187,8 +188,10 @@ class ChatActivity : AppCompatActivity() {
 
             }.addOnSuccessListener { result ->
                 binding.chatMessage.setText("")
+                binding.sendMessage.isEnabled = true
             }.addOnFailureListener { e ->
                 Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
+                binding.sendMessage.isEnabled = true
             }
         }
     }// End fun

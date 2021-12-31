@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -29,11 +30,41 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        //Action Bar
-        getSupportActionBar()?.setTitle("Explore")
-
         // Initialize Firebase Auth
         auth = Firebase.auth
+
+        //Action Bar
+        supportActionBar?.title = ""
+
+    }// End onCreate
+
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Firebase.firestore.collection("users")
+                .whereEqualTo("id_user", currentUser.uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if(documents.isEmpty){
+                        startActivity(Intent(this, AddProfileUserActivity::class.java))
+                    }else{
+                        displayFragment()
+                    }
+                }
+        }else{
+            displayFragment()
+        }
+    }//End onStart
+
+    private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
+            replace(R.id.frame_layout_main_activity, fragment)
+            commit()
+    }
+
+    private fun displayFragment(){
+        supportActionBar?.title = "Explore"
 
         //Bottom Navigation
         val exploreFragment = ExploreFragment()
@@ -56,30 +87,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-
-    }// End onCreate
-
-
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            Firebase.firestore.collection("users")
-                .whereEqualTo("id_user", currentUser.uid)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if(documents.isEmpty){
-                        startActivity(Intent(this, AddProfileUserActivity::class.java))
-                    }
-                }
-        }
-    }//End onStart
-
-    private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
-            replace(R.id.frame_layout_main_activity, fragment)
-            commit()
-        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
@@ -101,7 +109,19 @@ class MainActivity : AppCompatActivity() {
                 if(auth.currentUser == null){
                     Toast.makeText(this, "Harus Login Terlebih Dahulu", Toast.LENGTH_SHORT).show()
                 }else{
-                    startActivity(Intent(this, ShopProductListActivity::class.java))
+                    Firebase.firestore.collection("shop")
+                        .whereEqualTo("id_user", auth.currentUser!!.uid)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            if(documents.isEmpty){
+                                startActivity(Intent(this, AddProfileShopActivity::class.java))
+                            }else{
+                                startActivity(Intent(this, ShopProductListActivity::class.java))
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(this, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show()
+                        }
                 }
                 true
             }

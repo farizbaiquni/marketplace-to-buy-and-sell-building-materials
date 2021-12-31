@@ -23,10 +23,6 @@ class ExploreFragment : Fragment(R.layout.explore_fragment) {
     private lateinit var viewModel: ExploreViewModel
     private lateinit var adapterProductList: ExploreAdapter
 
-    companion object {
-        fun newInstance() = ExploreFragment()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

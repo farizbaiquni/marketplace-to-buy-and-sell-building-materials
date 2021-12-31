@@ -62,7 +62,8 @@ class SignUpActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign up success, update UI with the signed-in user's information
                     Toast.makeText(this, "Akun berhasil dibuat", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this, AddProfileUserActivity::class.java))
+                    finish()
                 } else {
                     // If sign up fails, display a message to the user.
                     Toast.makeText(this, "Gagal membuat akun", Toast.LENGTH_SHORT).show()

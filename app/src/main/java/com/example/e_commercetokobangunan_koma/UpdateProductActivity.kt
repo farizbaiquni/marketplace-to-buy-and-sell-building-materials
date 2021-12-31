@@ -49,7 +49,16 @@ class UpdateProductActivity : AppCompatActivity() {
             var kondisiBekas = binding.radioButtonBekas.isChecked
 
             if(validateForm(nama, harga, deskripsi, jumlahStok, berat, kondisiBaru, kondisiBekas)){
-                updateProduct(idProduct, nama, harga, deskripsi, linkVideo, berat, jumlahStok, kondisiBaru,)
+                updateProduct(
+                    idProduct,
+                    nama,
+                    harga,
+                    deskripsi,
+                    linkVideo,
+                    berat,
+                    jumlahStok,
+                    kondisiBaru
+                )
             }
 
         })
@@ -117,6 +126,7 @@ class UpdateProductActivity : AppCompatActivity() {
         }.addOnSuccessListener {
             Toast.makeText(this, "Data Produk Berhasil Diupdate", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, ShopProductListActivity::class.java))
+            finish()
         }
             .addOnFailureListener {
                 Toast.makeText(this, "Data Produk Gagal Diupdate", Toast.LENGTH_SHORT).show()

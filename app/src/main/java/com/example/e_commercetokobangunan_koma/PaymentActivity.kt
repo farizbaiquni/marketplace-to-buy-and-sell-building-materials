@@ -59,6 +59,7 @@ class PaymentActivity : AppCompatActivity() {
                 //Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
                 Toast.makeText(this, "Transaksi Berhasil", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
             .addOnFailureListener { e ->
                 //Log.w(TAG, "Error adding document", e)

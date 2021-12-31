@@ -106,6 +106,9 @@ class AddProfileUserActivity : AppCompatActivity() {
         }
     }// End onSTart
 
+    override fun onBackPressed() {
+    }
+
 
     private fun validateForm(photo: Uri?, username: String, provinsi: String, kabupatenKota: String,
                              kecamatan: String, kelurahanDesa: String, alamatDetail: String): Boolean{
@@ -242,6 +245,7 @@ class AddProfileUserActivity : AppCompatActivity() {
                             loadingDialog.dismiss()
                             Toast.makeText(this, "Profil user berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this, MainActivity::class.java))
+                            finish()
                         }
                         .addOnFailureListener { e ->
                             loadingDialog.dismiss()

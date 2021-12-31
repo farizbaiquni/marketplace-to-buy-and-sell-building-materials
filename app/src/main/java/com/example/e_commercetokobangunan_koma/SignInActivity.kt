@@ -50,6 +50,7 @@ class SignInActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, MainActivity::class.java))
+                    finish()
 
                 } else {
                     // If sign in fails, display a message to the user.

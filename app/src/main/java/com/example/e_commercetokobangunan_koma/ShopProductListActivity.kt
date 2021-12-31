@@ -32,7 +32,7 @@ class ShopProductListActivity : AppCompatActivity() {
         setContentView(view)
 
         //Action Bar Name
-        getSupportActionBar()?.setTitle("Produk Toko")
+        supportActionBar?.title = ""
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -64,6 +64,7 @@ class ShopProductListActivity : AppCompatActivity() {
                     if(documents.isEmpty){
                         startActivity(Intent(this, AddProfileShopActivity::class.java))
                     }else{
+                        supportActionBar?.title = "Produk Toko"
                         //RecyclerView Adapter
                         var gridLayoutManager: GridLayoutManager = GridLayoutManager(this, 2)
                         binding.recyclerViewShopProductList.layoutManager = gridLayoutManager
@@ -73,7 +74,8 @@ class ShopProductListActivity : AppCompatActivity() {
                     }
                 }
                 .addOnFailureListener { exception ->
-                    //Log.w("TAG", "Error getting documents: ", exception)
+                    Toast.makeText(this, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
         }
     }

@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
+import java.io.IOException
 import java.util.*
 
 class ChatFromSellerActivity : AppCompatActivity() {
@@ -27,6 +29,7 @@ class ChatFromSellerActivity : AppCompatActivity() {
     private lateinit var idRoom: String
     private lateinit var idShop: String
     private lateinit var nameBuyer: String
+    private lateinit var photoBuyer: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,7 @@ class ChatFromSellerActivity : AppCompatActivity() {
         idRoom = bundle?.get("idRoom").toString()
         idShop = bundle?.get("idShop").toString()
         nameBuyer = bundle?.get("nameBuyer").toString()
+        photoBuyer = bundle?.get("photo").toString()
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -48,6 +52,13 @@ class ChatFromSellerActivity : AppCompatActivity() {
         chatFromSellerAdapter = ChatFromSellerAdapter(idShop)
         binding.recyclerViewChatFromSeller.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewChatFromSeller.adapter = chatFromSellerAdapter
+
+        try {
+            Picasso.get().load(photoBuyer).centerCrop()
+                .resize(700, 700).into(binding.photoChatFromSeller)
+        }catch (e: IOException){}
+
+        binding.usernameChatFromSeller.text = nameBuyer
 
         viewModel = ChatFromSellerViewModel()
         viewModel.getChats().observe(this){ chats ->

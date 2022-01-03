@@ -147,34 +147,52 @@ class ChatActivity : AppCompatActivity() {
 
         binding.sendMessage.isEnabled = false
         if(isFirst.equals(true)){
-            val users = mutableListOf<String>(idShop, idUser)
-            val photoUsers = mutableListOf<String>(photoShop, "")
-            val names = mutableListOf<String>(nameShop, auth.currentUser?.displayName.toString())
 
-            val rooms = hashMapOf(
-                "id_users" to users,
-                "photo_users" to photoUsers,
-                "name_users" to names,
-                "last_chat" to "",
-                "last_chat_date" to Timestamp.now().toDate()
-            )
+            var photoProfile: String = ""
 
-            val roomRef = Firebase.firestore.collection("rooms_chat").document()
-            val chatRef = Firebase.firestore.collection("chats").document()
+            Firebase.firestore.collection("users")
+                .whereEqualTo("id_user", idUser)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        photoProfile =  document.data.get("photo_url").toString()
+                    }
 
-            Firebase.firestore.runTransaction { transaction ->
-                transaction.set(roomRef, rooms)
-                transaction.set(chatRef, ChatModel(roomRef.id, idUser, message, Timestamp.now().toDate()))
-                transaction.update(roomRef, "last_chat", message)
+                    val users = mutableListOf<String>(idShop, idUser)
+                    val photoUsers = mutableListOf<String>(photoShop, photoProfile)
+                    val names = mutableListOf<String>(nameShop, auth.currentUser?.displayName.toString())
 
-            }.addOnSuccessListener { result ->
-                binding.chatMessage.setText("")
-                getRoomChat(idShop, idUser)
-                binding.sendMessage.isEnabled = true
-            }.addOnFailureListener { e ->
-                Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
-                binding.sendMessage.isEnabled = true
-            }
+                    val rooms = hashMapOf(
+                        "id_users" to users,
+                        "photo_users" to photoUsers,
+                        "name_users" to names,
+                        "last_chat" to "",
+                        "last_chat_date" to Timestamp.now().toDate()
+                    )
+
+                    val roomRef = Firebase.firestore.collection("rooms_chat").document()
+                    val chatRef = Firebase.firestore.collection("chats").document()
+
+                    Firebase.firestore.runTransaction { transaction ->
+                        transaction.set(roomRef, rooms)
+                        transaction.set(chatRef, ChatModel(roomRef.id, idUser, message, Timestamp.now().toDate()))
+                        transaction.update(roomRef, "last_chat", message)
+
+                    }.addOnSuccessListener { result ->
+                        binding.chatMessage.setText("")
+                        getRoomChat(idShop, idUser)
+                        binding.sendMessage.isEnabled = true
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(this, "Chat gagal dikirim", Toast.LENGTH_SHORT).show()
+                        binding.sendMessage.isEnabled = true
+                    }
+
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Gagal mengirim pesan", Toast.LENGTH_SHORT).show()
+                    binding.sendMessage.isEnabled = true
+                }
         
         }else{
             var dateChat: Date = Timestamp.now().toDate()

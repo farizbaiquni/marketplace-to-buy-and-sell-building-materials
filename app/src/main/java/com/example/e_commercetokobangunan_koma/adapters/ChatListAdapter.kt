@@ -14,6 +14,7 @@ import com.example.e_commercetokobangunan_koma.ChatFromSellerActivity
 import com.example.e_commercetokobangunan_koma.R
 import com.example.e_commercetokobangunan_koma.adapters.ChatListAdapter.ViewHolder
 import com.example.e_commercetokobangunan_koma.models.ChatListModel
+import com.squareup.picasso.Picasso
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -59,6 +60,10 @@ class ChatListAdapter(context: Context): RecyclerView.Adapter<ViewHolder>() {
             val hour: DateFormat = SimpleDateFormat("HH-mm")
             holder.chat.text = chatList.get(position).chat
             holder.name.text = chatList.get(position).name_buyer
+            try {
+                Picasso.get().load(chatList.get(position).photo.toString()).centerCrop()
+                    .resize(700, 700).into(holder.photo)
+            }catch (e: Exception){}
             if(date.format(Date()).equals(date.format(chatList.get(position).date as Date))){
                 holder.date.text = hour.format(chatList.get(position).date)
             }else{
@@ -69,6 +74,7 @@ class ChatListAdapter(context: Context): RecyclerView.Adapter<ViewHolder>() {
                     putExtra("idRoom", chatList.get(position).id_room)
                     putExtra("idShop", chatList.get(position).id_shop)
                     putExtra("nameBuyer", chatList.get(position).name_buyer)
+                    putExtra("photo", chatList.get(position).photo)
                 })
             })
         }

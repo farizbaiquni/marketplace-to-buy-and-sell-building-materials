@@ -14,7 +14,8 @@
         android:theme="@style/Theme.ECommerceTokoBangunanKOMA">
         <activity
             android:name=".ChatFromSellerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.ECommerceTokoBangunanKOMANoActionBar"/>
         <activity
             android:name=".AddProfileUserActivity"
             android:exported="false" />
@@ -24,13 +25,6 @@
         <activity
             android:name=".ChatActivity"
             android:exported="true">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".UpdateProductActivity"

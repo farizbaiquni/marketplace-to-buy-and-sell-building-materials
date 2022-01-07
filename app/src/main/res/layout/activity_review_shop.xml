@@ -11,7 +11,7 @@
         android:id="@+id/review_shop_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
 
 
         <LinearLayout
@@ -102,6 +102,61 @@
                     android:enabled="false"/>
 
             </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                app:strokeColor="#ced4da"
+                app:strokeWidth="2dp"
+                app:cardCornerRadius="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="5dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="KUALITAS PENGEMASAN"
+                        android:gravity="center_horizontal"
+                        android:textStyle="bold"
+                        android:textSize="15dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#ced4da"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginHorizontal="20dp"/>
+
+                    <RatingBar
+                        android:id="@+id/rating_bar_pengemasan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        android:scaleX=".85"
+                        android:scaleY=".85"
+                        android:progressTint="#ffb703"
+                        android:progressBackgroundTint="#adb5bd"
+                        android:layout_gravity="center_horizontal"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_disable_review_kualitas_pengemasan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="#20000000"
+                    android:enabled="false"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -211,59 +266,6 @@
             </com.google.android.material.card.MaterialCardView>
 
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                app:strokeColor="#ced4da"
-                app:strokeWidth="2dp"
-                app:cardCornerRadius="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingVertical="5dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="KUALITAS PENGEMASAN"
-                        android:gravity="center_horizontal"
-                        android:textStyle="bold"
-                        android:textSize="15dp"/>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#ced4da"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginHorizontal="20dp"/>
-
-                    <RatingBar
-                        android:id="@+id/rating_bar_pengemasan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:numStars="5"
-                        android:stepSize="1"
-                        android:scaleX=".85"
-                        android:scaleY=".85"
-                        android:progressTint="#ffb703"
-                        android:progressBackgroundTint="#adb5bd"
-                        android:layout_gravity="center_horizontal"/>
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btn_disable_review_kualitas_pengemasan"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:backgroundTint="#20000000"
-                    android:enabled="false"/>
-
-            </com.google.android.material.card.MaterialCardView>
-
             <Button
                 android:id="@+id/btn_submit"
                 android:layout_marginTop="15dp"
@@ -289,7 +291,7 @@
         android:animationCache="true"
         app:shimmer_repeat_mode="restart"
         app:shimmer_shape="radial"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <include layout="@layout/shimmer_review_shop"/>
 

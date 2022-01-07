@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.e_commercetokobangunan_koma.adapters.ShopProductListAdapter
 import com.example.e_commercetokobangunan_koma.databinding.ActivityShopProductListBinding
 import com.example.e_commercetokobangunan_koma.models.ShopProductListModel
+import com.example.e_commercetokobangunan_koma.repositories.PresentShop
 import com.example.e_commercetokobangunan_koma.viewmodels.ShopProductListViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -71,6 +72,11 @@ class ShopProductListActivity : AppCompatActivity() {
                         binding.recyclerViewShopProductList.adapter = adapterProductList
 
                         getProductShopList(currentUser.uid)
+
+                        if(PresentShop.listenerStatus.equals(false)){
+                            PresentShop.checkPresentShop()
+                        }
+
                     }
                 }
                 .addOnFailureListener { exception ->

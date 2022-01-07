@@ -75,6 +75,7 @@ class ChatListAdapter(context: Context): RecyclerView.Adapter<ViewHolder>() {
                     putExtra("idShop", chatList.get(position).id_shop)
                     putExtra("nameBuyer", chatList.get(position).name_buyer)
                     putExtra("photo", chatList.get(position).photo)
+                    putExtra("idBuyer", chatList.get(position).id_buyer)
                 })
             })
         }

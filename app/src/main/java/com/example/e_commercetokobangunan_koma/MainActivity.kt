@@ -1,18 +1,29 @@
 package com.example.e_commercetokobangunan_koma
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkInfo
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.e_commercetokobangunan_koma.databinding.ActivityMainBinding
+import com.example.e_commercetokobangunan_koma.repositories.PresentShop
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ServerValue
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -36,6 +47,22 @@ class MainActivity : AppCompatActivity() {
         //Action Bar
         supportActionBar?.title = ""
 
+//        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        connectivityManager?.let {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                it.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+//                    override fun onAvailable(network: Network) {
+//                        Toast.makeText(this@MainActivity, "Connected", Toast.LENGTH_SHORT).show()
+//                    }
+//                    override fun onLost(network: Network) {
+//                        Toast.makeText(this@MainActivity, "Disconnected", Toast.LENGTH_SHORT).show()
+//                        //take action when network connection is lost
+//                    }
+//                })
+//            }
+//        }
+
+
     }// End onCreate
 
 
@@ -51,12 +78,18 @@ class MainActivity : AppCompatActivity() {
                         startActivity(Intent(this, AddProfileUserActivity::class.java))
                     }else{
                         displayFragment()
-                    }
+
+                        if(PresentShop.listenerStatus.equals(false)){
+                            PresentShop.checkPresentShop()
+                        }
+
+                    } // end else-if
                 }
         }else{
             displayFragment()
         }
     }//End onStart
+
 
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
             replace(R.id.frame_layout_main_activity, fragment)

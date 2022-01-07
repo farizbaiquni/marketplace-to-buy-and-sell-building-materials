@@ -1,6 +1,9 @@
 package com.example.e_commercetokobangunan_koma
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -14,6 +17,10 @@ import com.example.e_commercetokobangunan_koma.viewmodels.ChatFromSellerViewMode
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
@@ -28,6 +35,7 @@ class ChatFromSellerActivity : AppCompatActivity() {
     private lateinit var viewModel: ChatFromSellerViewModel
     private lateinit var idRoom: String
     private lateinit var idShop: String
+    private lateinit var idBuyer: String
     private lateinit var nameBuyer: String
     private lateinit var photoBuyer: String
 
@@ -43,8 +51,9 @@ class ChatFromSellerActivity : AppCompatActivity() {
         val bundle: Bundle? = intent.extras
         idRoom = bundle?.get("idRoom").toString()
         idShop = bundle?.get("idShop").toString()
+        idBuyer = bundle?.get("idBuyer").toString()
         nameBuyer = bundle?.get("nameBuyer").toString()
-        photoBuyer = bundle?.get("photo").toString()
+        photoBuyer = bundle?.get("photo")?.toString() ?: ""
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -54,16 +63,26 @@ class ChatFromSellerActivity : AppCompatActivity() {
         binding.recyclerViewChatFromSeller.adapter = chatFromSellerAdapter
 
         try {
-            Picasso.get().load(photoBuyer).centerCrop()
-                .resize(700, 700).into(binding.photoChatFromSeller)
-        }catch (e: IOException){}
-
+            Picasso.get().load(photoBuyer).centerCrop().resize(700, 700).into(binding.photoChatFromSeller)
+        }catch (e: Exception){}
         binding.usernameChatFromSeller.text = nameBuyer
+        binding.topAppBar.setNavigationOnClickListener {
+            startActivity(Intent(this, ChatListActivity::class.java  ))
+        }
 
         viewModel = ChatFromSellerViewModel()
         viewModel.getChats().observe(this){ chats ->
             if(!chats.isNullOrEmpty()){
                 chatFromSellerAdapter.setChats(chats)
+            }
+        }
+
+        viewModel.getisOnline().observe(this){ isOnline ->
+            if(isOnline){
+                binding.onlineStatusChatFromSeller.visibility = View.VISIBLE
+            }else{
+                binding.onlineStatusChatFromSeller.visibility = View.GONE
+
             }
         }
     }
@@ -85,6 +104,23 @@ class ChatFromSellerActivity : AppCompatActivity() {
                         binding.sendMessage.setOnClickListener(View.OnClickListener {
                             sendMessage(idShop, binding.chatMessage.text.toString(), idRoom)
                         })
+
+                        val connectionsRef = Firebase.database.getReference("/shopPresentStatus/${idBuyer}/connections")
+                        val isOnlineListener = object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    viewModel.setisOnline(true)
+                                    Toast.makeText(this@ChatFromSellerActivity, "ONLINE", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    viewModel.setisOnline(false)
+                                    Toast.makeText(this@ChatFromSellerActivity, "OFFLINE", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+                            }
+                        }
+                        connectionsRef.addValueEventListener(isOnlineListener)
                     }
                 }
         }

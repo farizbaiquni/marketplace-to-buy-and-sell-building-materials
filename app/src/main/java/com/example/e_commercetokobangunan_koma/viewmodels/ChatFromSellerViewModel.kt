@@ -15,4 +15,12 @@ class ChatFromSellerViewModel: ViewModel() {
         this.chats.value = data
     }
 
+    private var isOnline: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { postValue(false) }
+    fun getisOnline(): MutableLiveData<Boolean> {
+        return this.isOnline
+    }
+    fun setisOnline(data: Boolean){
+        this.isOnline.value = data
+    }
+
 }
